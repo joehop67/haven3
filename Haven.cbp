@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="Haven" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/Haven" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-std=c++17" />
+					<Add option="-g" />
+					<Add option="-D__WXDEBUG__" />
+					<Add directory="$(#wxdir.LIB)/mswud" />
+				</Compiler>
+				<ResourceCompiler>
+					<Add directory="$(#wxdir.LIB)/mswud" />
+				</ResourceCompiler>
+				<Linker>
+					<Add library="libwxmsw31ud_core.a" />
+					<Add library="libwxbase31ud.a" />
+					<Add library="libwxscintillad.a" />
+					<Add library="libwxmsw31ud_stc.a" />
+					<Add library="libwxmsw31ud_richtext.a" />
+					<Add directory="$(#wxdir.LIB)" />
+				</Linker>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/Haven" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add option="-std=c++17" />
+					<Add directory="$(#wxdir.LIB)/mswu" />
+				</Compiler>
+				<ResourceCompiler>
+					<Add directory="$(#wxdir.LIB)/mswu" />
+				</ResourceCompiler>
+				<Linker>
+					<Add option="-s" />
+					<Add library="ibwxmsw31u_core.a" />
+					<Add library="ibwxbase31u.a" />
+					<Add library="libwxscintilla.a" />
+					<Add library="libwxmsw31u_stc.a" />
+					<Add library="libwxmsw31u_richtext.a" />
+					<Add directory="$(#wxdir.LIB)" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add option="-std=c++17" />
+			<Add option="-pipe" />
+			<Add option="-mthreads" />
+			<Add option="-D__GNUWIN32__" />
+			<Add option="-D__WXMSW__" />
+			<Add option="-DwxUSE_UNICODE" />
+			<Add directory="$(#wxdir.BASE)" />
+		</Compiler>
+		<ResourceCompiler>
+			<Add directory="$(#wxdir.BASE)" />
+		</ResourceCompiler>
+		<Unit filename=".gitignore" />
+		<Unit filename="Makefile" />
+		<Unit filename="include/edit.h" />
+		<Unit filename="include/havenframe.h" />
+		<Unit filename="include/prefs.h" />
+		<Unit filename="include/projectmodel.h" />
+		<Unit filename="include/projectview.h" />
+		<Unit filename="include/tabview.h" />
+		<Unit filename="src/edit.cpp" />
+		<Unit filename="src/main.cpp" />
+		<Unit filename="src/prefs.cpp" />
+		<Unit filename="src/projectmodel.cpp" />
+		<Unit filename="src/tabview.cpp" />
+		<Extensions>
+			<code_completion>
+				<search_path add="$(#wxdir.include)" />
+			</code_completion>
+			<lib_finder disable_auto="1" />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
