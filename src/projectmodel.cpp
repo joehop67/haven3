@@ -1,6 +1,6 @@
 #include <iostream>
-#include <filesystem>
-
+//#include <filesystem>
+#include <string>
 #include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
@@ -12,60 +12,97 @@
 
 #include "../include/projectmodel.h"
 
-using namespace std;
+//using namespace std;
+using namespace boost;
 using namespace Haven;
-
-wxDirTraverseResult ProjectTraverser::OnFile(const wxString &filename) {
-  if (parentNode != NULL) {
-    wxString* fileNamePart = new wxString();
-    wxString* extPart = new wxString();
-    wxFileName::SplitPath(filename, NULL, fileNamePart, extPart);
-    wxString extension = ProjectModel::GetLanguage(extPart);
-    ProjectModelNode fileNode = new ProjectModelNode(parentNode, filename, fileNamePart, *extension, false);
-    parentNode->Append(fileNode);
-    return wxDIR_CONTINUE;
-  }
-  return wxDIR_STOP;
-}
-
-wxDirTraverseResult ProjectTraverser::OnDir(const wxString &dirname) {
-  if (parentNode != NULL) {
-    wxString dirNamePart = new wxString();
-    wxFileName::SplitPath(dirname, NULL, dirNamePart, NULL);
-    ProjectModelNode dirNode = new ProjectModelNode(parentNode, dirname, dirNamePart, NULL);
-    parentNode->Append(dirNode);
-    parentNode = dirNode;
-    return wxDIR_CONTINUE;
-  }
-  return wxDIR_STOP;
-}
 
 ProjectModel::ProjectModel(const wxString &sPath, const wxString &dirName) {
   if (wxFileName::DirExists(sPath)) {
-    m_root = new ProjectModelNode(NULL, sPath, dirName, NULL, true);
-    wxDir dir(sPath);
-    if (!dir.IsOpened()) {
-      ProjectTraverser traverser(m_root);
-      dir.Traverse(traverser);
+    m_root = new ProjectModelNode(NULL, sPath, dirName, "null", true);
+    filesystem::path rootPath(sPath);
+    if (filesystem::is_directory(rootPath)) {
+      filesystem::directory_iterator projectIterator(rootPath);
+      filesystem::directory_iterator end_iter;
+      ProjectModelNode *parent = m_root;
+      ProjectModelNode *subDirs = NULL;
+      for (; projectIterator != end_iter; projectIterator++) {
+        wxString *name = new wxString(projectIterator->path().filename().string());
+        wxString *path = new wxString(projectIterator->path().string());
+        if (filesystem::is_directory(projectIterator->path())) {
+          subDirs = new ProjectModelNode(parent, *path, *name, "null", true);
+          BuildDirectoryChain(subDirs, projectIterator->path());
+          parent->Append(subDirs);
+          subDirs = NULL;
+        }
+        if (filesystem::is_regular_file(projectIterator->path())) {
+          wxString *extensionPart = new wxString(projectIterator->path().extension().string());
+          wxString ext = GetLanguage(*extensionPart);
+          ProjectModelNode* fNode = new ProjectModelNode(parent, *path, *name, ext, false);
+        }
+      }
+      m_root = parent;
     }
   }
 }
 
-static wxString ProjectModel::GetLanguage(const wxString &ext) {
+void ProjectModel::BuildDirectoryChain(ProjectModelNode* node, const filesystem::path& nodePath) {
+  if (filesystem::is_directory(nodePath)) {
+    ProjectModelNode *parent = node;
+    filesystem::path curPath = nodePath;
+    filesystem::directory_iterator nodeItr(nodePath), endItr;
+    while (nodeItr != endItr) {
+      curPath = nodeItr->path();
+      if (filesystem::is_directory(nodeItr->path())) {
+        AppendDirNode(parent, curPath);
+      }
+      if (filesystem::is_regular_file(curPath)) {
+        AppendFileNode(parent, curPath);
+      }
+      nodeItr++;
+    }
+  }
+}
+
+void ProjectModel::AppendFileNode(ProjectModelNode* parent, const filesystem::path& path) {
+  wxString *pathName = new wxString;
+  wxString *name = new wxString;
+  wxString *ext = new wxString;
+  pathName->Append(path.c_str());
+  name->Append(path.filename().c_str());
+  ext->Append(path.extension().c_str());
+  wxString lang = GetLanguage(*ext);
+  ProjectModelNode *fileNode = new ProjectModelNode(parent, *pathName, *name, lang, false);
+  parent->Append(fileNode);
+}
+
+void ProjectModel::AppendDirNode(ProjectModelNode* parent, const filesystem::path& path) {
+  wxString *pathName = new wxString;
+  wxString *name = new wxString;
+  pathName->Append(path.c_str());
+  name->Append(path.filename().c_str());
+  ProjectModelNode *dirNode = new ProjectModelNode(parent, *pathName, *name, "null", true);
+  BuildDirectoryChain(dirNode, path);
+  parent->Append(dirNode);
+}
+
+
+wxString ProjectModel::GetLanguage(const wxString &ext) {
   int checked;
   bool found;
-  wxString lang = new wxString();
+  wxString *lang = new wxString;
   ExtMap currentExt;
   for (checked = 0; checked < g_ExtensionMapSize; checked++) {
     currentExt = g_ExtensionMap[checked];
-    if (currentExt->extensions.find(ext) > npos) {
-      lang.Append(currentExt->language);
+    wxString curStr(currentExt.extensions);
+    if (curStr.find(ext) != wxNOT_FOUND) {
+      lang->Append(currentExt.language);
       found = true;
       break;
     }
   }
-  if (found) return lang;
-  lang.Append("#!NO");
+  if (found) return *lang;
+  lang->Append("#!NO");
+  return *lang;
 }
 
 wxString ProjectModel::GetTitle(const wxDataViewItem &item) const {
@@ -113,6 +150,14 @@ void ProjectModel::Delete(const wxDataViewItem &item) {
   delete node;
 
   ItemDeleted(parent, item);
+}
+
+bool ProjectModel::IsContainer(const wxDataViewItem &item) const {
+  if (!item.IsOk())
+    return true;
+
+  ProjectModelNode *node = (ProjectModelNode*) item.GetID();
+  return node->IsContainer();
 }
 
 int ProjectModel::Compare(const wxDataViewItem &item1, const wxDataViewItem &item2, unsigned int col, bool ascend) const {

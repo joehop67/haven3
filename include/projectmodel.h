@@ -1,8 +1,10 @@
 #ifndef HAVEN_PROJECTMODEL_H_INCLUDED
 #define HAVEN_PROJECTMODEL_H_INCLUDED
 
+#include <vector>
 #include <wx/hashmap.h>
 #include <wx/dir.h>
+#include <boost/filesystem.hpp>
 
 #include "prefs.h"
 
@@ -14,22 +16,22 @@ namespace Haven {
 
   class ProjectModelNode {
   public:
-    ProjectModelNode(ProjectModelNode *parent, const wxString &fullPath, const wxString &fileName, const wxString &language, bool isDir) {
+    ProjectModelNode(ProjectModelNode *parent, const wxString &fullPathi, const wxString &fileNamei, const wxString &languagei, bool isDiri) {
       m_parent = parent;
-      fullPath = fullPath;
-      fileName = fileName;
-      language = language;
-      title = fileName;
-      isDir = isDir;
-      m_container = false;
+      fullPath = fullPathi;
+      fileName = fileNamei;
+      language = languagei;
+      title = fileNamei;
+      isDir = isDiri;
+      m_container = isDiri;
     }
 
-    ProjectModelNode(ProjectModelNode *parent, const wxString &fullPath, const wxString &fileName, const wxString &language, const wxString &branch = NULL) {
+    ProjectModelNode(ProjectModelNode *parent, const wxString &fullPathi, const wxString &fileNamei, const wxString &languagei) {
       m_parent = parent;
-      fullPath = fullPath;
-      fileName = fileName;
-      language = language;
-      title = branch;
+      fullPath = fullPathi;
+      fileName = fileNamei;
+      language = languagei;
+      title = fileName;
       isDir = true;
       m_container = true;
     }
@@ -46,7 +48,7 @@ namespace Haven {
     bool IsDir() const { return isDir; }
 
     ProjectModelNode* GetParent() { return m_parent; }
-    ProjectModelNodePtrArray& GetChildren { return m_children; }
+    ProjectModelNodePtrArray& GetChildren() { return m_children; }
     ProjectModelNode* GetChildAt(unsigned int n) { return m_children.Item(n); }
 
     void Insert(ProjectModelNode* child, unsigned int n) { m_children.Insert(child, n); }
@@ -82,7 +84,7 @@ namespace Haven {
 
     static wxString GetLanguage(const wxString &ext);
 
-    virtual unsigned int GetColumnCount() const wxOVERRIDE { return 2; }
+    virtual unsigned int GetColumnCount() const wxOVERRIDE { return 1; }
     virtual wxString GetColumnType(unsigned int col) const wxOVERRIDE { return wxT("string"); }
     virtual void GetValue(wxVariant &variant, const wxDataViewItem &item, unsigned int col) const wxOVERRIDE;
     virtual bool SetValue(const wxVariant &variant, const wxDataViewItem &item, unsigned int col) wxOVERRIDE;
@@ -92,16 +94,9 @@ namespace Haven {
 
   private:
     ProjectModelNode* m_root;
-  };
-
-  class ProjectTraverser : public wxDirTraverser {
-  public:
-    ProjectTraverser(ProjectModelNode *root) : parentNode(root) {}
-    virtual wxDirTraverseResult OnFile(const wxString &filename);
-    virtual wxDirTraverseResult OnDir(const wxString &dirname);
-
-  private:
-    ProjectModelNode* parentNode;
+    void BuildDirectoryChain(ProjectModelNode* node, const boost::filesystem::path& nodePath);
+    void AppendFileNode(ProjectModelNode* parent, const boost::filesystem::path& path);
+    void AppendDirNode(ProjectModelNode* parent, const boost::filesystem::path& path);
   };
 }
 

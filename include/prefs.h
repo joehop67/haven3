@@ -4,6 +4,8 @@
 #include <wx/intl.h>
 #include <wx/stc/stc.h>
 
+#define STYLE_TYPES_COUNT 32
+
 #define havenSTC_TYPE_DEFAULT 0
 
 #define havenSTC_TYPE_WORD1 1
@@ -98,6 +100,13 @@ namespace Haven {
   extern const ExtMap g_ExtensionMap[];
   extern const int g_ExtensionMapSize;
 
+  struct ProjectInfo {
+    const char *name;
+    const char *rootFolder;
+    const char *rootPath;
+    const char *language;
+  };
+
   struct StyleInfo {
     const wxChar *name;
     const wxChar *foreground;
@@ -169,6 +178,7 @@ namespace Haven {
     havenID_PREFS_LANGUAGE,
     havenID_PREFS_STYLETYPE,
     havenID_PREFS_KEYWORDS,
+    havenID_OPEN_PROJECT
   };
 
 }

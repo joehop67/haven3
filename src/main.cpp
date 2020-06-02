@@ -7,15 +7,18 @@
 #include <wx/config.h>
 #include <wx/filedlg.h>
 #include <wx/filename.h>
+#include <wx/dirdlg.h>
 #include <wx/notebook.h>
 #include <wx/settings.h>
 #include <wx/string.h>
 #include <wx/image.h>
+#include <wx/splitter.h>
 
 #include "../include/defs.h"
 #include "../include/tabview.h"
 #include "../include/edit.h"
 #include "../include/prefs.h"
+#include "../include/projectview.h"
 
 using namespace Haven;
 
@@ -62,6 +65,7 @@ public:
   void OnFileSave(wxCommandEvent &event);
   void OnFileSaveAs(wxCommandEvent &event);
   void OnFileClose(wxCommandEvent &event);
+  void OnOpenProject(wxCommandEvent &event);
   // Properties
   void OnProperties(wxCommandEvent &event);
   void OnEdit(wxCommandEvent &event);
@@ -69,10 +73,17 @@ public:
   void OnFileOpenNT(wxCommandEvent &event);
   void ChangeTab(TabInfo tab);
 private:
+  bool IsProject();
+  ProjectInfo project;
+
   wxPanel *m_pane;
   TabView *m_tabman;
   Edit *m_edit;
+  ProjectView *m_project_view;
+  wxSplitterWindow *winSplit;
+  wxBoxSizer *splitSizer;
   void FileOpen(wxString fname);
+  void ProjectOpen(wxString folder);
 
   wxMenuBar *m_menuBar;
   void CreateMenu();
@@ -107,10 +118,10 @@ bool HavenApp::OnInit() {
   g_appname->Append("Haven");
 
   m_frame = new HavenFrame(*g_appname);
-  wxBoxSizer *winSize = new wxBoxSizer(wxHORIZONTAL);
-  winSize->SetMinSize(750, 550);
-  winSize->Add(m_frame->m_pane, 1, wxEXPAND);
-  m_frame->SetSizerAndFit(winSize);
+  //wxBoxSizer *winSize = new wxBoxSizer(wxHORIZONTAL);
+  //winSize->SetMinSize(750, 550);
+  //winSize->Add(m_frame->m_pane, 1, wxEXPAND);
+  //m_frame->SetSizerAndFit(winSize);
   m_frame->Layout();
   m_frame->Show(true);
 
@@ -126,6 +137,7 @@ wxBEGIN_EVENT_TABLE(HavenFrame, wxFrame)
   EVT_CLOSE(HavenFrame::OnClose)
   EVT_MENU(wxID_OPEN, HavenFrame::OnFileOpen)
   EVT_MENU(wxID_OPEN + 3000, HavenFrame::OnFileOpenNT)
+  EVT_MENU(havenID_OPEN_PROJECT, HavenFrame::OnOpenProject)
   EVT_MENU(wxID_SAVE, HavenFrame::OnFileSave)
   EVT_MENU(wxID_SAVEAS, HavenFrame::OnFileSaveAs)
   EVT_MENU(wxID_CLOSE, HavenFrame::OnFileClose)
@@ -151,6 +163,17 @@ HavenFrame::HavenFrame(const wxString& title)
   m_pane = NULL;
   m_tabman = NULL;
   m_edit = NULL;
+  m_project_view = NULL;
+
+  wxString tmp = wxFileName::GetCwd();
+  const char* cwdDir = tmp.mb_str();
+
+  project = {
+      "default",
+      cwdDir,
+      cwdDir,
+      "n/a"
+  };
 
   SetTitle(*g_appname);
   SetBackgroundColour(wxT("WHITE"));
@@ -158,13 +181,24 @@ HavenFrame::HavenFrame(const wxString& title)
   m_menuBar = new wxMenuBar;
   CreateMenu();
 
+  splitSizer = new wxBoxSizer(wxVERTICAL);
+  splitSizer->SetMinSize(750, 550);
+  winSplit = new wxSplitterWindow(this, wxID_ANY);
+  winSplit->SetSashGravity(0.5);
+  winSplit->SetMinimumPaneSize(20);
+  splitSizer->Add(winSplit, 1, wxEXPAND, 0);
+
   wxBoxSizer *sizer = new wxBoxSizer(wxHORIZONTAL);
-  m_pane = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, "");
-
+  m_pane = new wxPanel(winSplit, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, "");
   m_tabman = new TabView(m_pane, wxID_ANY);
-
   sizer->Add(m_tabman, 1, wxEXPAND);
   m_pane->SetSizer(sizer);
+
+  m_project_view = new ProjectView(winSplit, project.rootPath, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxEXPAND);
+
+  winSplit->SplitVertically(m_project_view, m_pane, 0);
+  this->SetSizerAndFit(splitSizer);
+  winSplit->SetSashPosition(200, true);
 
   m_edit = m_tabman->GetCurrentTab().t_edit;
   m_edit->SetFocus();
@@ -202,6 +236,14 @@ void HavenFrame::OnExit(wxCommandEvent &WXUNUSED(event)) {
   Close(true);
 }
 
+void HavenFrame::OnOpenProject(wxCommandEvent &WXUNUSED(event)) {
+  if (!m_edit || !m_project_view) return;
+  wxString folder;
+  wxDirDialog dialog(this, wxT("Open Project"), wxEmptyString, wxDD_DEFAULT_STYLE | wxDD_DIR_MUST_EXIST | wxDD_CHANGE_DIR);
+  if (dialog.ShowModal() != wxID_OK) return;
+  folder = dialog.GetPath();
+  ProjectOpen(folder);
+}
 
 void HavenFrame::OnFileOpen(wxCommandEvent &WXUNUSED(event)) {
   if (!m_edit) return;
@@ -271,6 +313,7 @@ void HavenFrame::CreateMenu() {
   wxMenu *menuFile = new wxMenu;
   menuFile->Append(wxID_OPEN, _("&Open...\tCtrl-O"));
   menuFile->Append(wxID_OPEN + 3000, _("&Open (new tab)...\tCtrl-O"));
+  menuFile->Append(havenID_OPEN_PROJECT, _("&Open Project..."));
   menuFile->Append(wxID_SAVE, _("&Save...\tCtrl-S"));
   menuFile->Append(wxID_SAVEAS, _("&Save as...\tCtrl-Shift-S"));
   menuFile->Append(wxID_CLOSE, _("&Close...\tCtrl-W"));
@@ -387,6 +430,57 @@ void HavenFrame::FileOpen(wxString fname) {
   m_edit = m_tabman->GetCurrentTab().t_edit;
   m_edit->LoadFile(fname);
   m_edit->SelectNone();
+}
+
+void HavenFrame::ProjectOpen(wxString folder) {
+  wxString folderPart;
+  wxFileName w(folder); w.Normalize(); folder = w.GetFullPath(); folderPart = w.GetFullName();
+  const char* name = folderPart.mb_str();
+  const char* path = folder.mb_str();
+  project = {
+    name,
+    name,
+    path,
+    "lang"
+  };
+
+  //this->Show(false);
+  this->Freeze();
+  splitSizer->Clear();
+  //splitSizer->Destroy();
+  //winSplit->RemoveChild(m_project_view);
+  winSplit->Destroy();
+  //m_pane->Destroy();
+  //while(m_project_view->IsBeingDeleted()) { continue; };
+  wxBoxSizer *nSizer = new wxBoxSizer(wxVERTICAL);
+  nSizer->SetMinSize(750, 550);
+  winSplit = new wxSplitterWindow(this, wxID_ANY);
+  winSplit->SetSashGravity(0.5);
+  winSplit->SetMinimumPaneSize(20);
+  nSizer->Add(winSplit, 1, wxEXPAND, 0);
+
+  wxBoxSizer *sizer = new wxBoxSizer(wxHORIZONTAL);
+  m_pane = new wxPanel(winSplit, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, "");
+  m_tabman = new TabView(m_pane, wxID_ANY);
+  sizer->Add(m_tabman, 1, wxEXPAND);
+  m_pane->SetSizer(sizer);
+
+  m_project_view = new ProjectView(winSplit, project.rootPath);
+
+  winSplit->SplitVertically(m_project_view, m_pane, 0);
+  //this->Fit();
+  this->SetSizerAndFit(nSizer);
+
+  splitSizer = nSizer;
+
+  m_edit = m_tabman->GetCurrentTab().t_edit;
+  m_edit->SetFocus();
+  this->Layout();
+  this->Refresh();
+  this->Update();
+  this->Thaw();
+  //this->Show(true);
+  winSplit->SetSashPosition(200, true);
 }
 
 wxBEGIN_EVENT_TABLE(HavenAbout, wxDialog)

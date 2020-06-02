@@ -62,14 +62,20 @@
 			<Add option="-D__WXMSW__" />
 			<Add option="-DwxUSE_UNICODE" />
 			<Add directory="$(#wxdir.BASE)" />
+			<Add directory="$(#boost.BASE)" />
 		</Compiler>
 		<ResourceCompiler>
 			<Add directory="$(#wxdir.BASE)" />
+			<Add directory="$(#boost.BASE)" />
 		</ResourceCompiler>
+		<Linker>
+			<Add library="../../../../../boost_1_73_0/stage/lib/libboost_filesystem-mgw10-mt-d-x64-1_73.a" />
+			<Add directory="$(#boost.INCLUDE)" />
+		</Linker>
 		<Unit filename=".gitignore" />
 		<Unit filename="Makefile" />
+		<Unit filename="include/defs.h" />
 		<Unit filename="include/edit.h" />
-		<Unit filename="include/havenframe.h" />
 		<Unit filename="include/prefs.h" />
 		<Unit filename="include/projectmodel.h" />
 		<Unit filename="include/projectview.h" />
@@ -78,6 +84,7 @@
 		<Unit filename="src/main.cpp" />
 		<Unit filename="src/prefs.cpp" />
 		<Unit filename="src/projectmodel.cpp" />
+		<Unit filename="src/projectview.cpp" />
 		<Unit filename="src/tabview.cpp" />
 		<Extensions>
 			<code_completion>

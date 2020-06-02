@@ -35,7 +35,7 @@ TabView::TabView(wxWindow *parent, wxWindowID id, const wxPoint &pos, const wxSi
     AddPage(currentTab.t_edit, currentTab.title, true);
   }
 
-TabView::~TabView() { delete &TabTable; };
+TabView::~TabView() { /*delete &TabTable;*/ };
 
 void TabView::AddTab(const wxString &title, Edit *editor) {
   editor->SetFocus();

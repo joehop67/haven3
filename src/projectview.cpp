@@ -5,6 +5,7 @@
 #endif // WX_PRECOMP
 
 #include <wx/filename.h>
+#include <wx/colordlg.h>
 
 #include "../include/projectview.h"
 
@@ -32,12 +33,12 @@ enum {
 };
 
 wxBEGIN_EVENT_TABLE(ProjectView, wxPanel)
-  EVT_MENU_RANGE(ID_MULTIPLE, ID_VERT_RULES, ProjectView::OnStyleChange)
+  //EVT_MENU_RANGE(ID_MULTIPLE, ID_VERT_RULES, ProjectView::OnStyleChange)
   EVT_MENU(ID_FOREGROUND_COLOR, ProjectView::OnSetForegroundColor)
   EVT_MENU(ID_BACKGROUND_COLOR, ProjectView::OnSetBackgroundColor)
   EVT_MENU(ID_COLLAPSE, ProjectView::OnCollapse)
   EVT_MENU(ID_EXPAND, ProjectView::OnExpand)
-  EVT_MENU(ID_SHOW_CURRENT, ProjectView::OnShowCurrent)
+  //EVT_MENU(ID_SHOW_CURRENT, ProjectView::OnShowCurrent)
 
   EVT_MENU(ID_DELETE_TREE_ITEM, ProjectView::OnDeleteTreeItem)
   EVT_MENU(ID_ADD_TREE_ITEM, ProjectView::OnAddTreeItem)
@@ -68,22 +69,128 @@ ProjectView::ProjectView(wxWindow *parent, const wxString &path, wxWindowID id, 
 ProjectView::~ProjectView() {}
 
 void ProjectView::BuildDataViewCtrl(const wxString &path) {
-  wxString* name;
+  wxString* name = new wxString;
   wxFileName::SplitPath(path, NULL, name, NULL);
-  m_projectview = new wxDataViewCtrl(this, ID_PROJECT_ITEM_CTRL);
-  m_projectview->Connect(wxEVT_CHAR, wxKeyEventHandler(ProjectView::OnDataViewChar), NULL, this);
-  m_project_model = new ProjectModel(path, name);
+  wxBoxSizer *sizer = new wxBoxSizer(wxVERTICAL);
+  m_projectview = new wxDataViewCtrl(this, ID_PROJECT_ITEM_CTRL, wxDefaultPosition, wxDefaultSize, wxEXPAND);
+  //m_projectview->Connect(wxEVT_CHAR, wxKeyEventHandler(ProjectView::OnDataViewChar), NULL, this);
+  m_project_model = new ProjectModel(path, *name);
 
   m_projectview->AssociateModel(m_project_model.get());
 
   wxDataViewTextRenderer *textRender = new wxDataViewTextRenderer("string", wxDATAVIEW_CELL_INERT);
-  wxDataViewColumn *col0 = new wxDataViewColumn("title", tr, 0, 350, wxALIGN_LEFT);
+  wxDataViewColumn *col0 = new wxDataViewColumn("title", textRender, 0, 350, wxALIGN_LEFT);
 
   m_projectview->AppendColumn(col0);
 
-  wxDataViewTextRenderer *langRend = new wxDataViewTextRenderer("string", wxDATAVIEW_CELL_INERT);
-  wxDataViewColumn *col1 = new wxDataViewColumn("language", langRend, 1, 80, wxALIGN_RIGHT);
+ // wxDataViewTextRenderer *langRend = new wxDataViewTextRenderer("string", wxDATAVIEW_CELL_INERT);
+  //wxDataViewColumn *col1 = new wxDataViewColumn("language", langRend, 1, 80, wxALIGN_RIGHT);
 
-  m_projectview->AppendColumn(col1);
+  //m_projectview->AppendColumn(col1);
+  sizer->Add(m_projectview, 1, wxEXPAND);
+  SetSizer(sizer);
 }
 
+void ProjectView::OnSetBackgroundColor(wxCommandEvent &WXUNUSED(event)) {
+  wxDataViewCtrl * const dataView = m_projectview;
+  wxColor color = wxGetColourFromUser(this, dataView->GetBackgroundColour());
+  if (color.IsOk()) {
+    dataView->SetBackgroundColour(color);
+    Refresh();
+  }
+}
+
+void ProjectView::OnSetForegroundColor(wxCommandEvent &WXUNUSED(event)) {
+  wxDataViewCtrl * const dataView = m_projectview;
+  wxColor color = wxGetColourFromUser(this, dataView->GetForegroundColour());
+  if (color.IsOk()) {
+    dataView->SetForegroundColour(color);
+    Refresh();
+  }
+}
+
+void ProjectView::OnCollapse(wxCommandEvent &WXUNUSED(event)) {
+  wxDataViewItem item = m_projectview->GetSelection();
+  if (item.IsOk())
+    m_projectview->Collapse(item);
+}
+
+void ProjectView::OnExpand(wxCommandEvent &WXUNUSED(event)) {
+  wxDataViewItem item = m_projectview->GetSelection();
+  if (item.IsOk())
+    m_projectview->Expand(item);
+}
+
+void ProjectView::OnActivated(wxDataViewEvent &event) {
+  wxString title = m_project_model->GetTitle(event.GetItem());
+
+  //TODO Open File
+
+  if (m_projectview->IsExpanded(event.GetItem())) {
+    return;
+  }
+
+}
+
+//TODO Open File
+void ProjectView::OnSelectionChanged(wxDataViewEvent &event) {}
+
+void ProjectView::OnExpanding(wxDataViewEvent &event) {}
+
+void ProjectView::OnExpanded(wxDataViewEvent &event) {}
+
+void ProjectView::OnCollapsing(wxDataViewEvent &event) {}
+
+void ProjectView::OnCollapsed(wxDataViewEvent &event) {}
+
+//TODO Change Context menu based on item type
+void ProjectView::OnContextMenu(wxDataViewEvent &event) {
+  wxMenu menu;
+  menu.Append(1, "New File");
+  menu.Append(2, "Open File");
+  menu.Append(3, "Copy File");
+
+  m_projectview->PopupMenu(&menu);
+}
+
+//TODO Open File current window
+void ProjectView::OnHeaderClick(wxDataViewEvent &event) {
+  event.Skip();
+}
+
+//TODO Open Context Menu
+void ProjectView::OnHeaderRightClick(wxDataViewEvent &event) {}
+
+void ProjectView::OnDeleteTreeItem(wxCommandEvent &WXUNUSED(event)) {
+  wxDataViewTreeCtrl *ctrl = (wxDataViewTreeCtrl*) m_projectview;
+  wxDataViewItem selected = ctrl->GetSelection();
+  if (!selected.IsOk())
+    return;
+
+  ctrl->DeleteItem(selected);
+}
+
+void ProjectView::OnAddTreeItem(wxCommandEvent &WXUNUSED(event)) {
+  wxDataViewTreeCtrl *ctrl = (wxDataViewTreeCtrl*) m_projectview;
+  wxDataViewItem selected = ctrl->GetSelection();
+  if (ctrl->IsContainer(selected)) {
+    wxDataViewItem nItem = ctrl->AppendItem(selected, "Item", 0);
+    ctrl->Select(nItem);
+  }
+}
+
+void ProjectView::OnAddTreeContainerItem(wxCommandEvent &WXUNUSED(event)) {
+  wxDataViewTreeCtrl* ctrl = (wxDataViewTreeCtrl*) m_projectview;
+  wxDataViewItem selected = ctrl->GetSelection();
+  if (ctrl->IsContainer(selected))
+    ctrl->AppendContainer(selected, "Container", 0);
+}
+
+void ProjectView::DeleteSelectedItems() {
+  wxDataViewItemArray items;
+  int len = m_projectview->GetSelections(items);
+  for (int i = 0; i < len; i++) {
+    if (items[i].IsOk())
+      m_project_model->Delete(items[i]);
+  }
+}

@@ -23,7 +23,7 @@ const CommonInfo Haven::g_CommonPrefs = {
   false
 };
 
-const ExtMap Haven::g_ExtensionMap = {
+const ExtMap Haven::g_ExtensionMap[] = {
   {
     "*.c;*.cc;*.cpp;*.cxx;*.cs;*.h;*.hh;*.hpp;*.hxx;*.sma",
     "C++"

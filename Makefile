@@ -6,6 +6,8 @@ OBJ = obj
 objects = obj/edit.o \
 					obj/main.o \
 					obj/prefs.o \
+					obj/projectmodel.o \
+					obj/projectview.o \
 					obj/tabview.o
 
 obj/%.o: src/%.cpp

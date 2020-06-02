@@ -14,13 +14,13 @@ namespace Haven {
     void BuildDataViewCtrl(const wxString &path);
 
   private:
-    void OnStyleChange(wxCommandEvent &event);
+    //void OnStyleChange(wxCommandEvent &event);
     void OnSetBackgroundColor(wxCommandEvent &event);
     void OnSetForegroundColor(wxCommandEvent &event);
 
     void OnCollapse(wxCommandEvent &event);
     void OnExpand(wxCommandEvent &event);
-    void OnShowCurrent(wxCommandEvent &event);
+    //void OnShowCurrent(wxCommandEvent &event);
 
     void OnDeleteTreeItem(wxCommandEvent &event);
     void OnAddTreeItem(wxCommandEvent &event);
@@ -40,7 +40,7 @@ namespace Haven {
 
     void OnContextMenu(wxDataViewEvent &event);
 
-    void OnDataViewChar(wxKeyEvent &event);
+    //void OnDataViewChar(wxKeyEvent &event);
 
     void DeleteSelectedItems();
 
