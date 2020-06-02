@@ -15,6 +15,7 @@
 #include <wx/splitter.h>
 
 #include "../include/defs.h"
+#include "../include/projectevent.h"
 #include "../include/tabview.h"
 #include "../include/edit.h"
 #include "../include/prefs.h"
@@ -72,6 +73,7 @@ public:
   void OnTabChange(wxNotebookEvent &event);
   void OnFileOpenNT(wxCommandEvent &event);
   void ChangeTab(TabInfo tab);
+  void OnProjectOpen(ProjectEvent &event);
 private:
   bool IsProject();
   ProjectInfo project;
@@ -153,6 +155,7 @@ wxBEGIN_EVENT_TABLE(HavenFrame, wxFrame)
   EVT_MENU(wxID_FIND, HavenFrame::OnEdit)
   EVT_MENU_RANGE(havenID_EDIT_FIRST, havenID_EDIT_LAST, HavenFrame::OnEdit)
   EVT_MENU(wxID_ABOUT, HavenFrame::OnAbout)
+  EVT_PROJECT_OPEN(PROJECT_OPEN_FILE_ID, HavenFrame::OnProjectOpen)
 wxEND_EVENT_TABLE()
 
 HavenFrame::HavenFrame(const wxString& title)
@@ -194,7 +197,7 @@ HavenFrame::HavenFrame(const wxString& title)
   sizer->Add(m_tabman, 1, wxEXPAND);
   m_pane->SetSizer(sizer);
 
-  m_project_view = new ProjectView(winSplit, project.rootPath, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxEXPAND);
+  m_project_view = new ProjectView(winSplit, this, project.rootPath, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxEXPAND);
 
   winSplit->SplitVertically(m_project_view, m_pane, 0);
   this->SetSizerAndFit(splitSizer);
@@ -243,6 +246,11 @@ void HavenFrame::OnOpenProject(wxCommandEvent &WXUNUSED(event)) {
   if (dialog.ShowModal() != wxID_OK) return;
   folder = dialog.GetPath();
   ProjectOpen(folder);
+}
+
+void HavenFrame::OnProjectOpen(ProjectEvent &event) {
+  wxString tPath = event.GetPath();
+  FileOpen(tPath);
 }
 
 void HavenFrame::OnFileOpen(wxCommandEvent &WXUNUSED(event)) {
@@ -426,7 +434,14 @@ void HavenFrame::FileOpen(wxString fname) {
   int curTab = m_tabman->GetCurrentTabIndex();
   wxString fnamePart;
   wxFileName w(fname); w.Normalize(); fname = w.GetFullPath(); fnamePart = w.GetFullName();
-  m_tabman->SetTabTitle(curTab, fnamePart);
+  if (!m_tabman->IsProjectFileOpen()) {
+    m_tabman->SetTabTitle(curTab, fnamePart);
+    m_tabman->SetProjectFileOpen(true);
+  } else {
+    Edit *nTab = new Edit(m_tabman, wxID_ANY);
+    m_tabman->AddTab(fnamePart, nTab);
+    m_tabman->SetProjectFileOpen(true);
+  }
   m_edit = m_tabman->GetCurrentTab().t_edit;
   m_edit->LoadFile(fname);
   m_edit->SelectNone();
@@ -465,7 +480,7 @@ void HavenFrame::ProjectOpen(wxString folder) {
   sizer->Add(m_tabman, 1, wxEXPAND);
   m_pane->SetSizer(sizer);
 
-  m_project_view = new ProjectView(winSplit, project.rootPath);
+  m_project_view = new ProjectView(winSplit, this, project.rootPath);
 
   winSplit->SplitVertically(m_project_view, m_pane, 0);
   //this->Fit();

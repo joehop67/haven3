@@ -26,6 +26,8 @@ namespace Haven {
     void AddTab(const wxString &title, Edit *editor);
     void AddDefaultTab(const wxString &title);
     //void RemoveTab(int index);
+    bool IsProjectFileOpen() { return projectFileIsOpen; }
+    void SetProjectFileOpen(bool isOpen = false) { projectFileIsOpen = isOpen; }
 
     int GetCurrentTabIndex();
     TabInfo GetCurrentTab();
@@ -37,6 +39,7 @@ namespace Haven {
     std::vector<TabInfo> TabTable;
     int activeIndex;
     TabInfo currentTab;
+    bool projectFileIsOpen;
 
     wxDECLARE_EVENT_TABLE();
   };

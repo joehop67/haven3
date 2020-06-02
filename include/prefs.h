@@ -120,6 +120,10 @@ namespace Haven {
   extern const int g_StylePrefsSize;
 
   enum {
+    PROJECT_OPEN_FILE_ID
+  };
+
+  enum {
     // menu IDs
     havenID_PROPERTIES = wxID_HIGHEST,
     havenID_EDIT_FIRST,

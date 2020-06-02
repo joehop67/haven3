@@ -33,6 +33,7 @@ TabView::TabView(wxWindow *parent, wxWindowID id, const wxPoint &pos, const wxSi
     activeIndex = 0;
     currentTab = TabTable[activeIndex];
     AddPage(currentTab.t_edit, currentTab.title, true);
+    projectFileIsOpen = false;
   }
 
 TabView::~TabView() { /*delete &TabTable;*/ };
@@ -50,6 +51,7 @@ void TabView::AddTab(const wxString &title, Edit *editor) {
   //g_TabTableSize = g_TabTable.size();
   //activeIndex = tabAdd.index;
   //currentTab = tabAdd;
+  projectFileIsOpen = true;
   AddPage(tabAdd.t_edit, title, true);
 }
 

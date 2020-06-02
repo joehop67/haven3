@@ -2,13 +2,14 @@
 #define HAVEN_PROJECTVIEW_H_INCLUDED
 
 #include <wx/dataview.h>
+#include <wx/event.h>
 
 #include "projectmodel.h"
 
 namespace Haven {
   class ProjectView : public wxPanel {
   public:
-    ProjectView(wxWindow *parent, const wxString &path, wxWindowID id = wxID_ANY, const wxPoint &pos = wxDefaultPosition, const wxSize &size = wxDefaultSize, long style = 0);
+    ProjectView(wxWindow *parent, wxWindow *rootFrame, const wxString &path, wxWindowID id = wxID_ANY, const wxPoint &pos = wxDefaultPosition, const wxSize &size = wxDefaultSize, long style = 0);
     ~ProjectView();
 
     void BuildDataViewCtrl(const wxString &path);
@@ -51,6 +52,7 @@ namespace Haven {
     wxDataViewColumn* m_attrs;
 
     wxDECLARE_EVENT_TABLE();
+    wxWindow *rootFrame;
   };
 }
 

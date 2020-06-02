@@ -2755,7 +2755,7 @@
 
 1572198102 c:\wxwgcc\include\wx\qt\notebook.h
 
-1590603861 c:\users\annan\workspace\test\haven\include\defs.h
+1591130098 c:\users\annan\workspace\test\haven\include\defs.h
 
 1590630536 c:\users\annan\workspace\test\haven\include\edit.h
 	<wx/stc/stc.h>
@@ -2822,7 +2822,7 @@
 
 1572198102 c:\wxwgcc\include\wx\qt\dnd.h
 
-1590785085 c:\users\annan\workspace\test\haven\include\prefs.h
+1591132035 c:\users\annan\workspace\test\haven\include\prefs.h
 	<wx/intl.h>
 	<wx/stc/stc.h>
 
@@ -2842,13 +2842,13 @@
 	"../include/defs.h"
 	"../include/edit.h"
 
-1590689390 c:\users\annan\workspace\test\haven\include\tabview.h
+1591137534 c:\users\annan\workspace\test\haven\include\tabview.h
 	<vector>
 	<wx/notebook.h>
 	"defs.h"
 	"edit.h"
 
-1590792742 source:c:\users\annan\workspace\test\haven\src\tabview.cpp
+1591137164 source:c:\users\annan\workspace\test\haven\src\tabview.cpp
 	<wx/wxprec.h>
 	<wx/wx.h>
 	"../include/tabview.h"
@@ -2857,8 +2857,9 @@
 	<wx/wxprec.h>
 	<wx/wx.h>
 
-1590773968 c:\users\annan\workspace\test\haven\include\projectview.h
+1591131117 c:\users\annan\workspace\test\haven\include\projectview.h
 	<wx/dataview.h>
+	<wx/event.h>
 	"projectmodel.h"
 
 1572198102 c:\wxwgcc\include\wx\dataview.h
@@ -2929,7 +2930,7 @@
 
 1572198102 c:\wxwgcc\include\wx\qt\dataview.h
 
-1591128014 c:\users\annan\workspace\test\haven\include\projectmodel.h
+1591135062 c:\users\annan\workspace\test\haven\include\projectmodel.h
 	<vector>
 	<wx/hashmap.h>
 	<wx/dir.h>
@@ -2941,7 +2942,7 @@
 	"wx/string.h"
 	"wx/filefn.h"
 
-1591127971 source:c:\users\annan\workspace\test\haven\src\projectmodel.cpp
+1591135041 source:c:\users\annan\workspace\test\haven\src\projectmodel.cpp
 	<iostream>
 	<string>
 	<wx/wxprec.h>
@@ -2950,12 +2951,13 @@
 	<wx/filename.h>
 	"../include/projectmodel.h"
 
-1590783166 source:c:\users\annan\workspace\test\haven\src\projectview.cpp
+1591136028 source:c:\users\annan\workspace\test\haven\src\projectview.cpp
 	<wx/wxprec.h>
 	<wx/wx.h>
 	<wx/filename.h>
 	<wx/colordlg.h>
 	"../include/projectview.h"
+	"../include/projectevent.h"
 
 1572198102 c:\wxwgcc\include\wx\colordlg.h
 	"wx/defs.h"
@@ -5425,4 +5427,11 @@
 	<fstream>
 	<boost/config/abi_prefix.hpp>
 	<boost/config/abi_suffix.hpp>
+
+1591136551 c:\users\annan\workspace\test\haven\include\projectevent.h
+	<wx/wxprec.h>
+	<wx/wx.h>
+
+1591136839 source:c:\users\annan\workspace\test\haven\src\projectevent.cpp
+	"../include/projectevent.h"
 

@@ -8,6 +8,7 @@
 #include <wx/colordlg.h>
 
 #include "../include/projectview.h"
+#include "../include/projectevent.h"
 
 using namespace Haven;
 
@@ -57,8 +58,9 @@ wxBEGIN_EVENT_TABLE(ProjectView, wxPanel)
   EVT_DATAVIEW_ITEM_CONTEXT_MENU(ID_PROJECT_ITEM_CTRL, ProjectView::OnContextMenu)
 wxEND_EVENT_TABLE()
 
-ProjectView::ProjectView(wxWindow *parent, const wxString &path, wxWindowID id, const wxPoint &pos, const wxSize &size, long style)
-  : wxPanel(parent, id, pos, size, style)
+
+ProjectView::ProjectView(wxWindow *parent, wxWindow *rootFrame, const wxString &path, wxWindowID id, const wxPoint &pos, const wxSize &size, long style)
+  : rootFrame(rootFrame), wxPanel(parent, id, pos, size, style)
 {
   m_projectview = NULL;
   m_col = NULL;
@@ -125,6 +127,19 @@ void ProjectView::OnActivated(wxDataViewEvent &event) {
   wxString title = m_project_model->GetTitle(event.GetItem());
 
   //TODO Open File
+  wxDataViewItem item = event.GetItem();
+  if (item.IsOk()) {
+    ProjectModelNode *node = (ProjectModelNode*) item.GetID();
+    //wxCommandEvent projectOpenFile(PROJECT_OPEN_FILE, PROJECT_OPEN_FILE_ID);
+    //event.SetString(node->fullPath);
+
+    ProjectEvent projectEvent(rootFrame);
+    projectEvent.SetPath(node->fullPath);
+
+    wxPostEvent(rootFrame, projectEvent);
+    return;
+    //wxPostEvent(rootFrame, projectOpenFile);
+  }
 
   if (m_projectview->IsExpanded(event.GetItem())) {
     return;
