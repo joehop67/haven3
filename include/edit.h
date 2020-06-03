@@ -77,6 +77,8 @@ namespace Haven {
     void SetFilename(const wxString &filename) { m_filename = filename; };
 
   private:
+    bool confLL;
+    bool confCF;
     wxString m_filename;
 
     Haven::LanguageInfo const* m_language;

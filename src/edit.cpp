@@ -5,6 +5,7 @@
   #include <wx/textdlg.h>
 #endif // WX_PRECOMP
 
+#include <wx/config.h>
 #include <wx/file.h>
 #include <wx/filename.h>
 #include <wx/filedlg.h>
@@ -72,6 +73,10 @@ wxEND_EVENT_TABLE()
 Edit::Edit (wxWindow *parent, wxWindowID id, const wxPoint &pos, const wxSize &size, long style)
   : wxStyledTextCtrl(parent, id, pos, size, style)
   {
+    wxConfigBase *havenConf = wxConfigBase::Get(false);
+    havenConf->SetPath("/Editor");
+    confLL = havenConf->ReadBool("ShowLineNumbers", true);
+    confCF = havenConf->ReadBool("EnabledCodeFolding", true);
     m_filename = wxEmptyString;
 
     m_LineNrID = 0;
@@ -461,7 +466,7 @@ Edit::Edit (wxWindow *parent, wxWindowID id, const wxPoint &pos, const wxSize &s
     StyleSetBackground(m_FoldingID, *wxWHITE);
     SetMarginWidth(m_FoldingID, 0);
     SetMarginSensitive(m_FoldingID, false);
-    if (Haven::g_CommonPrefs.foldEnable) {
+    if (confCF) {
       SetMarginWidth(m_FoldingID, curInfo->folds != 0 ? m_FoldingMargin : 0);
       SetMarginSensitive(m_FoldingID, curInfo->folds != 0);
       SetProperty(wxT("fold"), curInfo->folds != 0 ? wxT("1") : wxT("0"));
@@ -487,6 +492,10 @@ Edit::Edit (wxWindow *parent, wxWindowID id, const wxPoint &pos, const wxSize &s
     SetOvertype(Haven::g_CommonPrefs.overTypeInitial);
     SetReadOnly(Haven::g_CommonPrefs.readOnlyInitial);
     SetWrapMode(Haven::g_CommonPrefs.wrapModeInitial ? wxSTC_WRAP_WORD : wxSTC_WRAP_NONE);
+
+    if (confLL) {
+      SetMarginWidth(m_LineNrID, GetMarginWidth(m_LineNrID) == 0 ? m_LineNrMargin : 0);
+    }
 
     return true;
   }

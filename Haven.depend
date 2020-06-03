@@ -2641,12 +2641,15 @@
 
 1572198102 c:\wxwgcc\include\wx\qt\mdi.h
 
-1591145698 source:c:\users\annan\workspace\test\haven\src\main.cpp
+1591151017 source:c:\users\annan\workspace\test\haven\src\main.cpp
 	<wx/wxprec.h>
 	<wx/wx.h>
 	<wx/config.h>
+	<wx/fileconf.h>
 	<wx/filedlg.h>
 	<wx/filename.h>
+	<wx/file.h>
+	<wx/dir.h>
 	<wx/dirdlg.h>
 	<wx/notebook.h>
 	<wx/settings.h>
@@ -2654,6 +2657,7 @@
 	<wx/image.h>
 	<wx/splitter.h>
 	<wx/event.h>
+	<wx/stdpaths.h>
 	"../include/defs.h"
 	"../include/projectevent.h"
 	"../include/tabview.h"
@@ -2759,7 +2763,7 @@
 
 1591130098 c:\users\annan\workspace\test\haven\include\defs.h
 
-1590630536 c:\users\annan\workspace\test\haven\include\edit.h
+1591152033 c:\users\annan\workspace\test\haven\include\edit.h
 	<wx/stc/stc.h>
 	"prefs.h"
 
@@ -2844,13 +2848,13 @@
 	"../include/defs.h"
 	"../include/edit.h"
 
-1591141972 c:\users\annan\workspace\test\haven\include\tabview.h
+1591146524 c:\users\annan\workspace\test\haven\include\tabview.h
 	<vector>
 	<wx/aui/auibook.h>
 	"defs.h"
 	"edit.h"
 
-1591146272 source:c:\users\annan\workspace\test\haven\src\tabview.cpp
+1591146632 source:c:\users\annan\workspace\test\haven\src\tabview.cpp
 	<wx/wxprec.h>
 	<wx/wx.h>
 	"../include/tabview.h"
@@ -5470,4 +5474,18 @@
 	"wx/timer.h"
 	"wx/sizer.h"
 	"wx/bitmap.h"
+
+1572198102 c:\wxwgcc\include\wx\stdpaths.h
+	"wx/defs.h"
+	"wx/string.h"
+	"wx/filefn.h"
+	"wx/msw/stdpaths.h"
+	"wx/osx/cocoa/stdpaths.h"
+	"wx/unix/stdpaths.h"
+
+1572198102 c:\wxwgcc\include\wx\msw\stdpaths.h
+
+1572198102 c:\wxwgcc\include\wx\osx\cocoa\stdpaths.h
+
+1572198102 c:\wxwgcc\include\wx\unix\stdpaths.h
 

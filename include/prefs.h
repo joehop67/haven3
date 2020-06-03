@@ -65,6 +65,7 @@
 #define havenSTC_FLAG_WRAPMODE 16
 
 namespace Haven {
+  //TODO: Replace with Config System
   struct CommonInfo {
     bool syntaxEnable;
     bool foldEnable;

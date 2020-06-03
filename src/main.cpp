@@ -5,8 +5,11 @@
 #endif // WX_PRECOMP
 
 #include <wx/config.h>
+#include <wx/fileconf.h>
 #include <wx/filedlg.h>
 #include <wx/filename.h>
+#include <wx/file.h>
+#include <wx/dir.h>
 #include <wx/dirdlg.h>
 #include <wx/notebook.h>
 #include <wx/settings.h>
@@ -14,6 +17,7 @@
 #include <wx/image.h>
 #include <wx/splitter.h>
 #include <wx/event.h>
+#include <wx/stdpaths.h>
 
 #include "../include/defs.h"
 #include "../include/projectevent.h"
@@ -41,6 +45,7 @@ private:
   wxFrame* MinimalEditor();
 
 protected:
+  void CreateHavenConfig(wxFileConfig *config);
   void OnMinimalEditor(wxCommandEvent&);
   wxDECLARE_EVENT_TABLE();
 };
@@ -121,6 +126,18 @@ bool HavenApp::OnInit() {
   g_appname = new wxString();
   g_appname->Append("Haven");
 
+  wxString confDir = wxStandardPaths::Get().GetUserConfigDir() + wxFileName::GetPathSeparator() + "joeyhop";
+  wxString confPath = confDir + wxFileName::GetPathSeparator() + "haven.conf";
+
+  if(!wxDir::Exists(confDir)) {
+    wxDir::Make(confDir);
+  }
+  wxFileConfig *havenConfig = new wxFileConfig("", "", confPath);
+  if (!wxFile::Exists(confPath)) {
+    CreateHavenConfig(havenConfig);
+  }
+
+  wxConfigBase::Set(havenConfig);
   m_frame = new HavenFrame(*g_appname);
   //wxBoxSizer *winSize = new wxBoxSizer(wxHORIZONTAL);
   //winSize->SetMinSize(750, 550);
@@ -132,7 +149,28 @@ bool HavenApp::OnInit() {
   return true;
 }
 
+void HavenApp::CreateHavenConfig(wxFileConfig *config) {
+  config->SetPath("/Editor");
+  config->Write("ShowLineNumbers", true);
+  config->Write("EnableCodeFolding", true);
+
+  config->SetPath("/Layout");
+  config->Write("StartFullScreen", false);
+  config->Write("ShowProjectPane", true);
+
+  config->SetPath("/Startup");
+  config->Write("ShowWelcome", true);
+  config->Write("DefaultProject", false);
+
+  config->SetPath("/Paths");
+  config->Write("PluginPath", false);
+  config->Write("ThemePath", false);
+
+  config->Flush();
+}
+
 int HavenApp::OnExit() {
+  delete wxConfigBase::Set((wxConfigBase*) NULL);
   delete g_appname;
   return 0;
 }
@@ -212,7 +250,15 @@ HavenFrame::HavenFrame(const wxString& title)
   // FileOpen(wxT("main.cpp"));
 }
 
-HavenFrame::~HavenFrame() {}
+HavenFrame::~HavenFrame() {
+  //wxConfigBase *conf = wxConfigBase::Get(false);
+  //if (conf == NULL)
+    //return;
+
+  //conf->Write("/test/test123", "This is a test val");
+  //conf->Write("/test/oanother", "another");
+  //conf->Flush();
+}
 
 void HavenFrame::OnClose(wxCloseEvent &event) {
   wxCommandEvent ev;
