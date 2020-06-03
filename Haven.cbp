@@ -78,15 +78,14 @@
 		<Unit filename="Makefile" />
 		<Unit filename="include/defs.h" />
 		<Unit filename="include/edit.h" />
-		<Unit filename="include/grammar.h" />
-		<Unit filename="include/nlohmann/json.hpp" />
+		<Unit filename="include/languagemeta.h" />
 		<Unit filename="include/prefs.h" />
 		<Unit filename="include/projectevent.h" />
 		<Unit filename="include/projectmodel.h" />
 		<Unit filename="include/projectview.h" />
 		<Unit filename="include/tabview.h" />
 		<Unit filename="src/edit.cpp" />
-		<Unit filename="src/grammar.cpp" />
+		<Unit filename="src/languagemeta.cpp" />
 		<Unit filename="src/main.cpp">
 			<Option weight="60" />
 		</Unit>
