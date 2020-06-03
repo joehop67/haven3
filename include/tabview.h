@@ -2,7 +2,8 @@
 #define HAVEN_TABVIEW_H_INCLUDED
 
 #include <vector>
-#include <wx/notebook.h>
+//#include <wx/notebook.h>
+#include <wx/aui/auibook.h>
 
 #include "defs.h"
 #include "edit.h"
@@ -17,7 +18,7 @@ namespace Haven {
  // extern std::vector<TabInfo> g_TabTable;
   extern int g_TabTableSize;
 
-  class TabView : public wxNotebook {
+  class TabView : public wxAuiNotebook {
   public:
     //TabView(wxWindow *parent, wxWindowID id = wxID_ANY, const wxPoint &pos = wxDefaultPosition, const wxSize &size = wxDefaultSize, long style = wxVSCROLL, wxNotebookPage *page);
     TabView(wxWindow *parent, wxWindowID id = wxID_ANY, const wxPoint &pos = wxDefaultPosition, const wxSize &size = wxDefaultSize, long style = 0);
@@ -31,10 +32,11 @@ namespace Haven {
 
     int GetCurrentTabIndex();
     TabInfo GetCurrentTab();
+    void SetCurrentActiveTab(int index);
 
     void SetTabTitle(int tabIndex, const wxString &newTitle);
 
-    void OnTabChange(wxNotebookEvent &event);
+    void OnTabChange(wxAuiNotebookEvent &event);
   protected:
     std::vector<TabInfo> TabTable;
     int activeIndex;

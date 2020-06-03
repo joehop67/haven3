@@ -2641,7 +2641,7 @@
 
 1572198102 c:\wxwgcc\include\wx\qt\mdi.h
 
-1590796006 source:c:\users\annan\workspace\test\haven\src\main.cpp
+1591145698 source:c:\users\annan\workspace\test\haven\src\main.cpp
 	<wx/wxprec.h>
 	<wx/wx.h>
 	<wx/config.h>
@@ -2653,7 +2653,9 @@
 	<wx/string.h>
 	<wx/image.h>
 	<wx/splitter.h>
+	<wx/event.h>
 	"../include/defs.h"
+	"../include/projectevent.h"
 	"../include/tabview.h"
 	"../include/edit.h"
 	"../include/prefs.h"
@@ -2842,13 +2844,13 @@
 	"../include/defs.h"
 	"../include/edit.h"
 
-1591137534 c:\users\annan\workspace\test\haven\include\tabview.h
+1591141972 c:\users\annan\workspace\test\haven\include\tabview.h
 	<vector>
-	<wx/notebook.h>
+	<wx/aui/auibook.h>
 	"defs.h"
 	"edit.h"
 
-1591137164 source:c:\users\annan\workspace\test\haven\src\tabview.cpp
+1591146272 source:c:\users\annan\workspace\test\haven\src\tabview.cpp
 	<wx/wxprec.h>
 	<wx/wx.h>
 	"../include/tabview.h"
@@ -5434,4 +5436,38 @@
 
 1591136839 source:c:\users\annan\workspace\test\haven\src\projectevent.cpp
 	"../include/projectevent.h"
+
+1572198102 c:\wxwgcc\include\wx\aui\auibook.h
+	"wx/defs.h"
+	"wx/aui/tabart.h"
+	"wx/aui/framemanager.h"
+	"wx/bookctrl.h"
+	"wx/containr.h"
+
+1572198102 c:\wxwgcc\include\wx\aui\tabart.h
+	"wx/defs.h"
+	"wx/colour.h"
+	"wx/gdicmn.h"
+	"wx/font.h"
+	"wx/pen.h"
+	"wx/brush.h"
+	"wx/bitmap.h"
+	"wx/aui/tabartgtk.h"
+	"wx/aui/tabartmsw.h"
+
+1572198102 c:\wxwgcc\include\wx\aui\tabartgtk.h
+	"wx/defs.h"
+	"wx/aui/tabart.h"
+	"wx/gdicmn.h"
+
+1572198102 c:\wxwgcc\include\wx\aui\tabartmsw.h
+
+1572198102 c:\wxwgcc\include\wx\aui\framemanager.h
+	"wx/defs.h"
+	"wx/dynarray.h"
+	"wx/gdicmn.h"
+	"wx/window.h"
+	"wx/timer.h"
+	"wx/sizer.h"
+	"wx/bitmap.h"
 

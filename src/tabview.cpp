@@ -9,14 +9,14 @@
 using namespace std;
 using namespace Haven;
 
-wxBEGIN_EVENT_TABLE(TabView, wxNotebook)
-  EVT_BOOKCTRL_PAGE_CHANGING(wxID_ANY, OnTabChange)
+wxBEGIN_EVENT_TABLE(TabView, wxAuiNotebook)
+  EVT_AUINOTEBOOK_PAGE_CHANGING(wxID_ANY, OnTabChange)
 wxEND_EVENT_TABLE()
 
 int Haven::g_TabTableSize = 0;
 
 TabView::TabView(wxWindow *parent, wxWindowID id, const wxPoint &pos, const wxSize &size, long style)
-  : wxNotebook(parent, id, pos, size, style)
+  : wxAuiNotebook(parent, id, pos, size, style | wxAUI_NB_CLOSE_BUTTON | wxAUI_NB_CLOSE_ON_ALL_TABS)
   {
 //    parentFrame = frame;
     Edit *tabEdit = new Edit(this, wxID_ANY);
@@ -32,8 +32,10 @@ TabView::TabView(wxWindow *parent, wxWindowID id, const wxPoint &pos, const wxSi
     TabTable = t;
     activeIndex = 0;
     currentTab = TabTable[activeIndex];
-    AddPage(currentTab.t_edit, currentTab.title, true);
+    this->AddPage(currentTab.t_edit, currentTab.title, true);
     projectFileIsOpen = false;
+    wxAuiTabArt *art = new wxAuiSimpleTabArt;
+    SetArtProvider(art);
   }
 
 TabView::~TabView() { /*delete &TabTable;*/ };
@@ -52,7 +54,7 @@ void TabView::AddTab(const wxString &title, Edit *editor) {
   //activeIndex = tabAdd.index;
   //currentTab = tabAdd;
   projectFileIsOpen = true;
-  AddPage(tabAdd.t_edit, title, true);
+  AddPage(tabAdd.t_edit, title, true, wxNullBitmap);
 }
 
 void TabView::AddDefaultTab(const wxString &title) {
@@ -68,14 +70,8 @@ void TabView::AddDefaultTab(const wxString &title) {
   TabTable.push_back(defaultTab);
   activeIndex = defaultTab.index;
   currentTab = defaultTab;
-  AddPage(currentTab.t_edit, title, true);
+  AddPage(currentTab.t_edit, title, true, wxNullBitmap);
 }
-
-//void TabView::RemoveTab(int index) {
-//  if (index < g_TabTableSize) {
-//
-//  }
-//}
 
 void TabView::SetTabTitle(int tabIndex, const wxString &newTitle) {
   TabTable[tabIndex].title = newTitle;
@@ -86,8 +82,21 @@ void TabView::SetTabTitle(int tabIndex, const wxString &newTitle) {
 
 }
 
-void TabView::OnTabChange(wxNotebookEvent &WXUNUSED(event)) {
+void TabView::SetCurrentActiveTab(int index) {
+  TabInfo selected = TabTable[index];
+  if (selected.t_edit != NULL) {
+    TabTable[activeIndex].isActive = false;
+    selected.isActive = true;
+    currentTab = selected;
+    activeIndex = index;
+    SetSelection(index);
+  }
+}
+
+void TabView::OnTabChange(wxAuiNotebookEvent &event) {
+  wxEvtHandler *type1 = NULL;
   TabTable[activeIndex].isActive = false;
+  int curIdx = GetSelection();
   int tabIdx;
   for (TabInfo tab : TabTable) {
     if (tab.isActive) {
@@ -97,6 +106,11 @@ void TabView::OnTabChange(wxNotebookEvent &WXUNUSED(event)) {
     }
   }
   activeIndex = tabIdx;
+  type1 = event.GetPropagatedFrom();
+  if (type1 != NULL) {
+    int cur = event.GetSelection();
+    SetCurrentActiveTab(cur);
+  }
 }
 
 int TabView::GetCurrentTabIndex() {

@@ -13,6 +13,7 @@
 #include <wx/string.h>
 #include <wx/image.h>
 #include <wx/splitter.h>
+#include <wx/event.h>
 
 #include "../include/defs.h"
 #include "../include/projectevent.h"
@@ -70,10 +71,11 @@ public:
   // Properties
   void OnProperties(wxCommandEvent &event);
   void OnEdit(wxCommandEvent &event);
-  void OnTabChange(wxNotebookEvent &event);
+//  void OnTabChange(wxNotebookEvent &event);
   void OnFileOpenNT(wxCommandEvent &event);
   void ChangeTab(TabInfo tab);
   void OnProjectOpen(ProjectEvent &event);
+  void OnTabChange(wxMouseEvent &event);
 private:
   bool IsProject();
   ProjectInfo project;
@@ -194,6 +196,7 @@ HavenFrame::HavenFrame(const wxString& title)
   wxBoxSizer *sizer = new wxBoxSizer(wxHORIZONTAL);
   m_pane = new wxPanel(winSplit, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, "");
   m_tabman = new TabView(m_pane, wxID_ANY);
+  //m_tabman->Bind(wxEVT_LEFT_UP, &HavenFrame::OnTabChange, this);
   sizer->Add(m_tabman, 1, wxEXPAND);
   m_pane->SetSizer(sizer);
 
@@ -221,11 +224,11 @@ void HavenFrame::OnClose(wxCloseEvent &event) {
   Destroy();
 }
 
-void HavenFrame::OnTabChange(wxBookCtrlEvent &WXUNUSED(event)) {
-  if (this->wxWindow::IsShown()) {
-    m_edit = m_tabman->GetCurrentTab().t_edit;
-  }
-}
+//void HavenFrame::OnTabChange(wxBookCtrlEvent &WXUNUSED(event)) {
+//  if (this->wxWindow::IsShown()) {
+//    m_edit = m_tabman->GetCurrentTab().t_edit;
+//  }
+//}
 
 void HavenFrame::ChangeTab(TabInfo tab) {
   m_edit = tab.t_edit;
@@ -246,6 +249,16 @@ void HavenFrame::OnOpenProject(wxCommandEvent &WXUNUSED(event)) {
   if (dialog.ShowModal() != wxID_OK) return;
   folder = dialog.GetPath();
   ProjectOpen(folder);
+}
+
+void HavenFrame::OnTabChange(wxMouseEvent &event) {
+  long flags;
+  int ht = m_tabman->HitTest(wxPoint(event.GetX(), event.GetY()), &flags);
+  if ((flags & wxBK_HITTEST_NOWHERE) == 0) {
+    m_tabman->SetCurrentActiveTab(ht);
+    m_edit = m_tabman->GetCurrentTab().t_edit;
+  }
+  //event.Skip();
 }
 
 void HavenFrame::OnProjectOpen(ProjectEvent &event) {
