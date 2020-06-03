@@ -2,34 +2,44 @@
 <CodeBlocks_layout_file>
 	<FileVersion major="1" minor="0" />
 	<ActiveTarget name="Debug" />
-	<File name="include\prefs.h" open="1" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="src\projectview.cpp" open="0" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="4428" topLine="76" />
+			<Cursor1 position="4999" topLine="88" />
 		</Cursor>
 	</File>
-	<File name="src\projectmodel.cpp" open="1" top="1" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="src\prefs.cpp" open="1" top="0" tabpos="12" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="848" topLine="0" />
+			<Cursor1 position="1993" topLine="0" />
 		</Cursor>
 	</File>
-	<File name="include\edit.h" open="1" top="0" tabpos="6" split="0" active="1" splitpos="357" zoom_1="0" zoom_2="0">
+	<File name="src\grammar.cpp" open="1" top="1" tabpos="16" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="499" topLine="0" />
+			<Cursor1 position="383" topLine="0" />
 		</Cursor>
 	</File>
-	<File name="src\tabview.cpp" open="1" top="0" tabpos="9" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="src\projectmodel.cpp" open="1" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="973" topLine="24" />
+			<Cursor1 position="7476" topLine="8" />
 		</Cursor>
 	</File>
-	<File name="src\edit.cpp" open="1" top="0" tabpos="3" split="0" active="1" splitpos="1171" zoom_1="0" zoom_2="0">
+	<File name="include\defs.h" open="1" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="13858" topLine="56" />
+			<Cursor1 position="174" topLine="0" />
 		</Cursor>
 	</File>
-	<File name="src\projectview.cpp" open="1" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="src\edit.cpp" open="1" top="0" tabpos="13" split="0" active="1" splitpos="1171" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="2229" topLine="60" />
+			<Cursor1 position="14835" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="include\projectmodel.h" open="1" top="0" tabpos="8" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="3740" topLine="24" />
+		</Cursor>
+	</File>
+	<File name="include\prefs.h" open="1" top="0" tabpos="11" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="368" topLine="82" />
 		</Cursor>
 	</File>
 	<File name=".gitignore" open="0" top="0" tabpos="8" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -37,40 +47,49 @@
 			<Cursor1 position="32" topLine="0" />
 		</Cursor>
 	</File>
-	<File name="Makefile" open="1" top="0" tabpos="10" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="include\edit.h" open="1" top="0" tabpos="14" split="0" active="1" splitpos="357" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="407" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="src\main.cpp" open="1" top="0" tabpos="1" split="0" active="1" splitpos="355" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="4299" topLine="185" />
+		</Cursor>
+	</File>
+	<File name="src\projectevent.cpp" open="1" top="0" tabpos="10" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="561" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="include\tabview.h" open="1" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1292" topLine="5" />
+		</Cursor>
+	</File>
+	<File name="include\projectview.h" open="1" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1610" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="include\projectevent.h" open="1" top="0" tabpos="9" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="421" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="include\grammar.h" open="1" top="0" tabpos="15" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="255" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="src\tabview.cpp" open="1" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="973" topLine="10" />
+		</Cursor>
+	</File>
+	<File name="Makefile" open="1" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="305" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="src\main.cpp" open="1" top="0" tabpos="2" split="1" active="1" splitpos="355" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="6989" topLine="242" />
-			<Cursor2 position="5430" topLine="200" />
-		</Cursor>
-	</File>
-	<File name="src\prefs.cpp" open="1" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="370" topLine="8" />
-		</Cursor>
-	</File>
-	<File name="include\tabview.h" open="1" top="0" tabpos="8" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1018" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="include\projectmodel.h" open="1" top="0" tabpos="13" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="176" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="include\defs.h" open="1" top="0" tabpos="11" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="251" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="include\projectview.h" open="1" top="0" tabpos="12" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="467" topLine="11" />
 		</Cursor>
 	</File>
 </CodeBlocks_layout_file>

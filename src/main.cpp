@@ -25,6 +25,7 @@
 #include "../include/edit.h"
 #include "../include/prefs.h"
 #include "../include/projectview.h"
+#include "../include/languagemeta.h"
 
 using namespace Haven;
 

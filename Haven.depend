@@ -2828,7 +2828,7 @@
 
 1572198102 c:\wxwgcc\include\wx\qt\dnd.h
 
-1591132035 c:\users\annan\workspace\test\haven\include\prefs.h
+1591152359 c:\users\annan\workspace\test\haven\include\prefs.h
 	<wx/intl.h>
 	<wx/stc/stc.h>
 
@@ -2838,10 +2838,11 @@
 	"../include/defs.h"
 	"../include/prefs.h"
 
-1590691855 source:c:\users\annan\workspace\test\haven\src\edit.cpp
+1591152171 source:c:\users\annan\workspace\test\haven\src\edit.cpp
 	<wx/wxprec.h>
 	<wx/wx.h>
 	<wx/textdlg.h>
+	<wx/config.h>
 	<wx/file.h>
 	<wx/filename.h>
 	<wx/filedlg.h>

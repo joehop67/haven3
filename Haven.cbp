@@ -26,6 +26,7 @@
 					<Add library="libwxscintillad.a" />
 					<Add library="libwxmsw31ud_stc.a" />
 					<Add library="libwxmsw31ud_richtext.a" />
+					<Add library="../../../../../wxwgcc/lib/gcc810_x64_dll_dev/libwxmsw31ud_aui.a" />
 					<Add directory="$(#wxdir.LIB)" />
 				</Linker>
 			</Target>
@@ -63,6 +64,7 @@
 			<Add option="-DwxUSE_UNICODE" />
 			<Add directory="$(#wxdir.BASE)" />
 			<Add directory="$(#boost.BASE)" />
+			<Add directory="include" />
 		</Compiler>
 		<ResourceCompiler>
 			<Add directory="$(#wxdir.BASE)" />
@@ -76,15 +78,28 @@
 		<Unit filename="Makefile" />
 		<Unit filename="include/defs.h" />
 		<Unit filename="include/edit.h" />
+		<Unit filename="include/grammar.h" />
+		<Unit filename="include/nlohmann/json.hpp" />
 		<Unit filename="include/prefs.h" />
+		<Unit filename="include/projectevent.h" />
 		<Unit filename="include/projectmodel.h" />
 		<Unit filename="include/projectview.h" />
 		<Unit filename="include/tabview.h" />
 		<Unit filename="src/edit.cpp" />
-		<Unit filename="src/main.cpp" />
-		<Unit filename="src/prefs.cpp" />
-		<Unit filename="src/projectmodel.cpp" />
-		<Unit filename="src/projectview.cpp" />
+		<Unit filename="src/grammar.cpp" />
+		<Unit filename="src/main.cpp">
+			<Option weight="60" />
+		</Unit>
+		<Unit filename="src/prefs.cpp">
+			<Option weight="10" />
+		</Unit>
+		<Unit filename="src/projectevent.cpp" />
+		<Unit filename="src/projectmodel.cpp">
+			<Option weight="20" />
+		</Unit>
+		<Unit filename="src/projectview.cpp">
+			<Option weight="30" />
+		</Unit>
 		<Unit filename="src/tabview.cpp" />
 		<Extensions>
 			<code_completion>
