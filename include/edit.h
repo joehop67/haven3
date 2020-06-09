@@ -3,6 +3,7 @@
 
 #include <wx/stc/stc.h>
 
+#include "languagemeta.h"
 #include "prefs.h"
 
 namespace Haven {
@@ -12,7 +13,7 @@ namespace Haven {
     friend class EditProperties;
 
   public:
-    Edit(wxWindow *parent, wxWindowID id = wxID_ANY, const wxPoint &pos = wxDefaultPosition, const wxSize &size = wxDefaultSize, long style = 0);
+    Edit(wxWindow *parent, Haven::LanguageMeta::LanguageDB *langDb, Haven::LanguageMeta::StyleDB *styleDb, wxWindowID id = wxID_ANY, const wxPoint &pos = wxDefaultPosition, const wxSize &size = wxDefaultSize, long style = 0);
     ~Edit();
 
     void OnSize(wxSizeEvent &event);
@@ -63,9 +64,9 @@ namespace Haven {
 
     // Language Settings
     wxString DeterminePrefs(const wxString &filename);
-    bool InitializePrefs(const wxString &filename);
+    bool InitializePrefs(const wxString &filename, const wxString &ext);
     bool UserSettings(const wxString &filename);
-    Haven::LanguageInfo const* GetLanguageInfo() { return m_language; };
+    Haven::LanguageMeta::Language* GetLanguageInfo() { return curLanguage; };
 
     // File methods
     bool LoadFile();
@@ -81,7 +82,9 @@ namespace Haven {
     bool confCF;
     wxString m_filename;
 
-    Haven::LanguageInfo const* m_language;
+    Haven::LanguageMeta::LanguageDB *languageDB;
+    Haven::LanguageMeta::StyleDB *styleDB;
+    Haven::LanguageMeta::Language *curLanguage;
 
     int m_LineNrID;
     int m_LineNrMargin;

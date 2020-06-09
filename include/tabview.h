@@ -5,6 +5,7 @@
 //#include <wx/notebook.h>
 #include <wx/aui/auibook.h>
 
+#include "languagemeta.h"
 #include "defs.h"
 #include "edit.h"
 
@@ -21,7 +22,7 @@ namespace Haven {
   class TabView : public wxAuiNotebook {
   public:
     //TabView(wxWindow *parent, wxWindowID id = wxID_ANY, const wxPoint &pos = wxDefaultPosition, const wxSize &size = wxDefaultSize, long style = wxVSCROLL, wxNotebookPage *page);
-    TabView(wxWindow *parent, wxWindowID id = wxID_ANY, const wxPoint &pos = wxDefaultPosition, const wxSize &size = wxDefaultSize, long style = 0);
+    TabView(wxWindow *parent, Haven::LanguageMeta::LanguageDB *langDb, Haven::LanguageMeta::StyleDB *styleDb, wxWindowID id = wxID_ANY, const wxPoint &pos = wxDefaultPosition, const wxSize &size = wxDefaultSize, long style = 0);
     ~TabView();
 
     void AddTab(const wxString &title, Edit *editor);
@@ -42,6 +43,8 @@ namespace Haven {
     int activeIndex;
     TabInfo currentTab;
     bool projectFileIsOpen;
+    Haven::LanguageMeta::LanguageDB *languageDB;
+    Haven::LanguageMeta::StyleDB *styleDB;
 
     wxDECLARE_EVENT_TABLE();
   };

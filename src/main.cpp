@@ -28,6 +28,7 @@
 #include "../include/languagemeta.h"
 
 using namespace Haven;
+using namespace Haven::LanguageMeta;
 
 class HavenBook;
 class HavenFrame;
@@ -92,8 +93,12 @@ private:
   ProjectView *m_project_view;
   wxSplitterWindow *winSplit;
   wxBoxSizer *splitSizer;
+  LanguageDB *languageDb;
+  StyleDB *styleDb;
+
   void FileOpen(wxString fname);
   void ProjectOpen(wxString folder);
+  void InitLangAndStyleDBs(LanguageDB *lang, StyleDB *style);
 
   wxMenuBar *m_menuBar;
   void CreateMenu();
@@ -208,6 +213,10 @@ HavenFrame::HavenFrame(const wxString& title)
   m_tabman = NULL;
   m_edit = NULL;
   m_project_view = NULL;
+  languageDb = new LanguageDB();
+  styleDb = new StyleDB();
+
+  InitLangAndStyleDBs(languageDb, styleDb);
 
   wxString tmp = wxFileName::GetCwd();
   const char* cwdDir = tmp.mb_str();
@@ -223,7 +232,13 @@ HavenFrame::HavenFrame(const wxString& title)
   SetBackgroundColour(wxT("WHITE"));
 
   m_menuBar = new wxMenuBar;
+  CreateStatusBar(4);
   CreateMenu();
+
+  SetStatusText(wxT("New File"), 0);
+  SetStatusText(wxT("<default>"), 1);
+  SetStatusText(wxT("placeholder"), 2);
+  SetStatusText(wxT("Placeholder"), 3);
 
   splitSizer = new wxBoxSizer(wxVERTICAL);
   splitSizer->SetMinSize(750, 550);
@@ -234,7 +249,7 @@ HavenFrame::HavenFrame(const wxString& title)
 
   wxBoxSizer *sizer = new wxBoxSizer(wxHORIZONTAL);
   m_pane = new wxPanel(winSplit, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, "");
-  m_tabman = new TabView(m_pane, wxID_ANY);
+  m_tabman = new TabView(m_pane, languageDb, styleDb, wxID_ANY);
   //m_tabman->Bind(wxEVT_LEFT_UP, &HavenFrame::OnTabChange, this);
   sizer->Add(m_tabman, 1, wxEXPAND);
   m_pane->SetSizer(sizer);
@@ -259,6 +274,488 @@ HavenFrame::~HavenFrame() {
   //conf->Write("/test/test123", "This is a test val");
   //conf->Write("/test/oanother", "another");
   //conf->Flush();
+}
+
+void HavenFrame::InitLangAndStyleDBs(LanguageDB *lang, StyleDB *style) {
+
+  const char* CppWordlist1 =
+    "asm auto bool break case catch char class const const_cast "
+    "continue default delete do double dynamic_cast else enum explicit "
+    "export extern false float for friend goto if inline int long "
+    "mutable namespace new operator private protected public register "
+    "reinterpret_cast return short signed sizeof static static_cast "
+    "struct switch template this throw true try typedef typeid "
+    "typename union unsigned using virtual void volatile wchar_t "
+    "while";
+  const char* CppWordlist2 =
+    "file";
+  const char* CppWordlist3 =
+    "a addindex addtogroup anchor arg attention author b brief bug c "
+    "class code date def defgroup deprecated dontinclude e em endcode "
+    "endhtmlonly endif endlatexonly endlink endverbatim enum example "
+    "exception f$ f[ f] file fn hideinitializer htmlinclude "
+    "htmlonly if image include ingroup internal invariant interface "
+    "latexonly li line link mainpage name namespace nosubgrouping note "
+    "overload p page par param post pre ref relates remarks return "
+    "retval sa section see showinitializer since skip skipline struct "
+    "subsection test throw todo typedef union until var verbatim "
+    "verbinclude version warning weakgroup $ @ \"\" & < > # { }";
+
+  const char* ext = "cpp";
+  const char* defExt = "any";
+
+  Language *cpp = new Language("C++", "*.c;*.cc;*.cpp;*.cxx;*.cs;*.h;*.hh;*.hpp;*.hxx;*.sma", wxSTC_LEX_CPP);
+  Language *defaultLang = new Language("<default>", "*.*", wxSTC_LEX_PROPERTIES);
+
+
+      LanguageStyle lFirst{
+        havenSTC_TYPE_DEFAULT,
+        NULL
+      };
+
+      LanguageStyle lSec{
+        havenSTC_TYPE_COMMENT,
+        NULL
+      };
+
+      LanguageStyle lThird{
+        havenSTC_TYPE_COMMENT_LINE,
+        NULL
+      };
+
+      LanguageStyle lFourth{
+        havenSTC_TYPE_COMMENT_DOC,
+        NULL
+      };
+
+      LanguageStyle lFifth{
+        havenSTC_TYPE_NUMBER,
+        NULL
+      };
+
+      LanguageStyle lSixth{
+        havenSTC_TYPE_WORD1,
+        CppWordlist1
+      };
+
+      LanguageStyle lSeventh{
+        havenSTC_TYPE_STRING,
+        NULL
+      };
+
+      LanguageStyle lEighth{
+        havenSTC_TYPE_CHARACTER,
+        NULL
+      };
+
+      LanguageStyle lNinth{
+        havenSTC_TYPE_UUID,
+        NULL
+      };
+
+      LanguageStyle lTenth{
+        havenSTC_TYPE_PREPROCESSOR,
+        NULL
+      };
+
+      LanguageStyle lEleventh{
+        havenSTC_TYPE_OPERATOR,
+        NULL
+      };
+
+      LanguageStyle lTwelveth{
+        havenSTC_TYPE_IDENTIFIER,
+        NULL
+      };
+
+      LanguageStyle lThirteenth{
+        havenSTC_TYPE_STRING_EOL,
+        NULL
+      };
+
+      LanguageStyle lFourteenth{
+        havenSTC_TYPE_DEFAULT,
+        NULL
+      };
+
+      LanguageStyle lFifteenth{
+        havenSTC_TYPE_REGEX,
+        NULL
+      };
+
+      LanguageStyle lSixteenth{
+        havenSTC_TYPE_COMMENT_SPECIAL,
+        NULL
+      };
+
+      LanguageStyle lSeventeenth{
+        havenSTC_TYPE_WORD2,
+        CppWordlist2
+      };
+
+      LanguageStyle lEighteenth{
+        havenSTC_TYPE_WORD3,
+        CppWordlist3
+      };
+
+      LanguageStyle lNineteenth{
+        havenSTC_TYPE_ERROR,
+        NULL
+      };
+
+
+    cpp->AppendStyle(lFirst);
+    cpp->AppendStyle(lSec);
+    cpp->AppendStyle(lThird);
+    cpp->AppendStyle(lFourth);
+    cpp->AppendStyle(lFifth);
+    cpp->AppendStyle(lSixth);
+    cpp->AppendStyle(lSeventh);
+    cpp->AppendStyle(lEighth);
+    cpp->AppendStyle(lNinth);
+    cpp->AppendStyle(lTenth);
+    cpp->AppendStyle(lEleventh);
+    cpp->AppendStyle(lTwelveth);
+    cpp->AppendStyle(lThirteenth);
+    cpp->AppendStyle(lFourteenth);
+    cpp->AppendStyle(lFifteenth);
+    cpp->AppendStyle(lSixteenth);
+    cpp->AppendStyle(lSeventeenth);
+    cpp->AppendStyle(lEighteenth);
+    cpp->AppendStyle(lNineteenth);
+
+    defaultLang->AppendStyle(lFirst);
+    defaultLang->AppendStyle(lFirst);
+    defaultLang->AppendStyle(lFirst);
+
+    languageDb->Register(cpp, ext);
+    languageDb->Register(defaultLang, defExt);
+
+
+  StyleDef defaultStyle{
+    wxT("Default"),
+    wxT("BLACK"),
+    wxT("WHITE"),
+    wxT(""),
+    10,
+    0,
+    0
+  };
+
+  StyleDef Key1{
+    wxT("Keyword1"),
+    wxT("BLUE"),
+    wxT("WHITE"),
+    wxT(""),
+    10,
+    havenSTC_STYLE_BOLD,
+    0
+  };
+
+    // mySTC_TYPE_WORD2
+    StyleDef Key2{
+      wxT("Keyword2"),
+      wxT("MIDNIGHT BLUE"),
+      wxT("WHITE"),
+      wxT(""),
+      10,
+      0,
+      0
+    };
+
+    // mySTC_TYPE_WORD3
+    StyleDef key3{
+      wxT("Keyword3"),
+      wxT("CORNFLOWER BLUE"),
+      wxT("WHITE"),
+      wxT(""),
+      10,
+      0,
+      0
+    };
+
+    // mySTC_TYPE_WORD4
+    StyleDef Key4{
+      wxT("Keyword4"),
+      wxT("CYAN"),
+      wxT("WHITE"),
+      wxT(""),
+      10,
+      0,
+      0
+    };
+
+    // mySTC_TYPE_WORD5
+    StyleDef Key5{
+      wxT("Keyword5"),
+      wxT("DARK GREY"),
+      wxT("WHITE"),
+      wxT(""),
+      10,
+      0,
+      0
+    };
+
+    // mySTC_TYPE_WORD6
+    StyleDef Key6{
+      wxT("Keyword6"),
+      wxT("GREY"),
+      wxT("WHITE"),
+      wxT(""),
+      10,
+      0,
+      0
+    };
+
+    StyleDef Com{
+      wxT("Comment"),
+      wxT("FOREST GREEN"),
+      wxT("WHITE"),
+      wxT(""),
+      10,
+      0,
+      0
+    };
+
+    StyleDef ComLine{
+      wxT("Comment line"),
+      wxT("FOREST GREEN"),
+      wxT("WHITE"),
+      wxT(""),
+      10,
+      0,
+      0
+    };
+
+    StyleDef ComSpec{
+      wxT("Special comment"),
+      wxT("FOREST GREEN"),
+      wxT("WHITE"),
+      wxT(""),
+      10,
+      0,
+      0
+    };
+
+    StyleDef CharStyle{
+      wxT("Character"),
+      wxT("KHAKI"),
+      wxT("WHITE"),
+      wxT(""),
+      10,
+      0,
+      0
+    };
+
+    StyleDef CharEOLStyle{
+      wxT("Character (EOL)"),
+      wxT("KHAKI"),
+      wxT("WHITE"),
+      wxT(""),
+      10,
+      0,
+      0
+    };
+
+    StyleDef StrStyle{
+      wxT("String"),
+      wxT("BROWN"),
+      wxT("WHITE"),
+      wxT(""),
+      10,
+      0,
+      0
+    };
+
+    StyleDef StrEOLStyle{
+      wxT("String (EOL)"),
+      wxT("BROWN"),
+      wxT("WHITE"),
+      wxT(""),
+      10,
+      0,
+      0
+    };
+
+    StyleDef DelimStyle{
+      wxT("Delimiter"),
+      wxT("ORANGE"),
+      wxT("WHITE"),
+      wxT(""),
+      10,
+      0,
+      0
+    };
+
+    StyleDef PuncStyle{
+      wxT("Punctuation"),
+      wxT("ORANGE"),
+      wxT("WHITE"),
+      wxT(""),
+      10,
+      0,
+      0
+    };
+
+    StyleDef OpStyle{
+      wxT("Operator"),
+      wxT("BLACK"),
+      wxT("WHITE"),
+      wxT(""),
+      10,
+      havenSTC_STYLE_BOLD,
+      0
+    };
+
+    StyleDef BraceStyle{
+      wxT("Brace"),
+      wxT("VIOLET"),
+      wxT("WHITE"),
+      wxT(""),
+      10,
+      0,
+      0
+    };
+
+    StyleDef CommandStyle{
+      wxT("Command"),
+      wxT("BLUE"),
+      wxT("WHITE"),
+      wxT(""),
+      10,
+      0,
+      0
+    };
+
+    StyleDef LabelStyle{
+      wxT("Label"),
+      wxT("VIOLET"),
+      wxT("WHITE"),
+      wxT(""),
+      10,
+      0,
+      0
+    };
+
+    StyleDef NumStyle{
+      wxT("Number"),
+      wxT("SIENNA"),
+      wxT("WHITE"),
+      wxT(""),
+      10,
+      0,
+      0
+    };
+
+    StyleDef ParamStyle{
+      wxT("Parameter"),
+      wxT("VIOLET"),
+      wxT("WHITE"),
+      wxT(""),
+      10,
+      havenSTC_STYLE_ITALIC,
+      0
+    };
+
+    StyleDef RegexStyle{
+      wxT("Regex"),
+      wxT("ORCHID"),
+      wxT("WHITE"),
+      wxT(""),
+      10,
+      0,
+      0
+    };
+
+    StyleDef UUIDStyle{
+      wxT("UUID"),
+      wxT("ORCHID"),
+      wxT("WHITE"),
+      wxT(""),
+      10,
+      0,
+      0
+    };
+
+    StyleDef ValStyle{
+      wxT("Value"),
+      wxT("ORCHID"),
+      wxT("WHITE"),
+      wxT(""),
+      10,
+      havenSTC_STYLE_ITALIC,
+      0
+    };
+
+    StyleDef PreProcStyle{
+      wxT("Preprocessor"),
+      wxT("GREY"),
+      wxT("WHITE"),
+      wxT(""),
+      10,
+      0,
+      0
+    };
+
+    StyleDef ScriptStyle{
+      wxT("Script"),
+      wxT("DARK GREY"),
+      wxT("WHITE"),
+      wxT(""),
+      10,
+      0,
+      0
+    };
+
+    StyleDef ErrStyle{
+      wxT("Error"),
+      wxT("Red"),
+      wxT("WHITE"),
+      wxT(""),
+      10,
+      0,
+      0
+    };
+
+    StyleDef UndefStyle{
+      wxT("Undefined"),
+      wxT("ORANGE"),
+      wxT("WHITE"),
+      wxT(""),
+      10,
+      0,
+      0
+    };
+
+    style->Add(defaultStyle);
+    style->Add(Key1);
+    style->Add(Key2);
+    style->Add(key3);
+    style->Add(Key4);
+    style->Add(Key5);
+    style->Add(Key6);
+    style->Add(Com);
+    style->Add(ComLine);
+    style->Add(ComSpec);
+    style->Add(CharStyle);
+    style->Add(CharEOLStyle);
+    style->Add(StrStyle);
+    style->Add(StrEOLStyle);
+    style->Add(DelimStyle);
+    style->Add(PuncStyle);
+    style->Add(OpStyle);
+    style->Add(BraceStyle);
+    style->Add(CommandStyle);
+    style->Add(LabelStyle);
+    style->Add(NumStyle);
+    style->Add(ParamStyle);
+    style->Add(RegexStyle);
+    style->Add(UUIDStyle);
+    style->Add(ValStyle);
+    style->Add(PreProcStyle);
+    style->Add(ScriptStyle);
+    style->Add(ErrStyle);
+    style->Add(UndefStyle);
 }
 
 void HavenFrame::OnClose(wxCloseEvent &event) {
@@ -325,7 +822,7 @@ void HavenFrame::OnFileOpen(wxCommandEvent &WXUNUSED(event)) {
 
 void HavenFrame::OnFileOpenNT(wxCommandEvent &WXUNUSED(event)) {
   if (!m_tabman) return;
-  Edit *ntab = new Edit(m_tabman, wxID_ANY);
+  Edit *ntab = new Edit(m_tabman, languageDb, styleDb, wxID_ANY);
   wxString fname;
   wxFileDialog dialog(this, wxT("Open File"), wxEmptyString, wxEmptyString, wxT("Any file (*)|*"), wxFD_OPEN | wxFD_FILE_MUST_EXIST | wxFD_CHANGE_DIR);
   if (dialog.ShowModal() != wxID_OK) return;
@@ -498,13 +995,16 @@ void HavenFrame::FileOpen(wxString fname) {
     m_tabman->SetTabTitle(curTab, fnamePart);
     m_tabman->SetProjectFileOpen(true);
   } else {
-    Edit *nTab = new Edit(m_tabman, wxID_ANY);
+    Edit *nTab = new Edit(m_tabman, languageDb, styleDb, wxID_ANY);
     m_tabman->AddTab(fnamePart, nTab);
     m_tabman->SetProjectFileOpen(true);
   }
   m_edit = m_tabman->GetCurrentTab().t_edit;
   m_edit->LoadFile(fname);
   m_edit->SelectNone();
+
+  SetStatusText(m_edit->GetFilename(), 0);
+  SetStatusText(m_edit->GetLanguageInfo()->GetName(), 1);
 }
 
 void HavenFrame::ProjectOpen(wxString folder) {
@@ -522,6 +1022,7 @@ void HavenFrame::ProjectOpen(wxString folder) {
   //this->Show(false);
   this->Freeze();
   splitSizer->Clear();
+  SetStatusText(name, 0);
   //splitSizer->Destroy();
   //winSplit->RemoveChild(m_project_view);
   winSplit->Destroy();
@@ -536,7 +1037,7 @@ void HavenFrame::ProjectOpen(wxString folder) {
 
   wxBoxSizer *sizer = new wxBoxSizer(wxHORIZONTAL);
   m_pane = new wxPanel(winSplit, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, "");
-  m_tabman = new TabView(m_pane, wxID_ANY);
+  m_tabman = new TabView(m_pane, languageDb, styleDb, wxID_ANY);
   sizer->Add(m_tabman, 1, wxEXPAND);
   m_pane->SetSizer(sizer);
 
@@ -550,6 +1051,7 @@ void HavenFrame::ProjectOpen(wxString folder) {
 
   m_edit = m_tabman->GetCurrentTab().t_edit;
   m_edit->SetFocus();
+  SetStatusText("default", 2);
   this->Layout();
   this->Refresh();
   this->Update();

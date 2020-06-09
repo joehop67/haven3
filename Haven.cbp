@@ -90,7 +90,7 @@
 			<Option weight="60" />
 		</Unit>
 		<Unit filename="src/prefs.cpp">
-			<Option weight="10" />
+			<Option weight="18" />
 		</Unit>
 		<Unit filename="src/projectevent.cpp" />
 		<Unit filename="src/projectmodel.cpp">

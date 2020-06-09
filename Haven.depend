@@ -2641,7 +2641,7 @@
 
 1572198102 c:\wxwgcc\include\wx\qt\mdi.h
 
-1591151017 source:c:\users\annan\workspace\test\haven\src\main.cpp
+1591736116 source:c:\users\annan\workspace\test\haven\src\main.cpp
 	<wx/wxprec.h>
 	<wx/wx.h>
 	<wx/config.h>
@@ -2664,6 +2664,7 @@
 	"../include/edit.h"
 	"../include/prefs.h"
 	"../include/projectview.h"
+	"../include/languagemeta.h"
 
 1572198102 c:\wxwgcc\include\wx\config.h
 	"wx/confbase.h"
@@ -2763,8 +2764,9 @@
 
 1591130098 c:\users\annan\workspace\test\haven\include\defs.h
 
-1591152033 c:\users\annan\workspace\test\haven\include\edit.h
+1591731030 c:\users\annan\workspace\test\haven\include\edit.h
 	<wx/stc/stc.h>
+	"languagemeta.h"
 	"prefs.h"
 
 1572198102 c:\wxwgcc\include\wx\stc\stc.h
@@ -2838,7 +2840,7 @@
 	"../include/defs.h"
 	"../include/prefs.h"
 
-1591152171 source:c:\users\annan\workspace\test\haven\src\edit.cpp
+1591738641 source:c:\users\annan\workspace\test\haven\src\edit.cpp
 	<wx/wxprec.h>
 	<wx/wx.h>
 	<wx/textdlg.h>
@@ -2849,13 +2851,14 @@
 	"../include/defs.h"
 	"../include/edit.h"
 
-1591146524 c:\users\annan\workspace\test\haven\include\tabview.h
+1591731999 c:\users\annan\workspace\test\haven\include\tabview.h
 	<vector>
 	<wx/aui/auibook.h>
+	"languagemeta.h"
 	"defs.h"
 	"edit.h"
 
-1591146632 source:c:\users\annan\workspace\test\haven\src\tabview.cpp
+1591732044 source:c:\users\annan\workspace\test\haven\src\tabview.cpp
 	<wx/wxprec.h>
 	<wx/wx.h>
 	"../include/tabview.h"
@@ -5489,4 +5492,13 @@
 1572198102 c:\wxwgcc\include\wx\osx\cocoa\stdpaths.h
 
 1572198102 c:\wxwgcc\include\wx\unix\stdpaths.h
+
+1591737661 source:c:\users\annan\workspace\test\haven\src\languagemeta.cpp
+	"languagemeta.h"
+
+1591737971 c:\users\annan\workspace\test\haven\include\languagemeta.h
+	<vector>
+	<map>
+	<array>
+	<wx/intl.h>
 

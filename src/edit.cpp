@@ -14,6 +14,7 @@
 #include "../include/edit.h"
 
 using namespace Haven;
+using namespace Haven::LanguageMeta;
 
 const int ANNOTATION_STYLE = wxSTC_STYLE_LASTPREDEFINED + 1;
 
@@ -70,7 +71,7 @@ wxBEGIN_EVENT_TABLE(Edit, wxStyledTextCtrl)
   EVT_KEY_DOWN(Haven::Edit::OnKeyDown)
 wxEND_EVENT_TABLE()
 
-Edit::Edit (wxWindow *parent, wxWindowID id, const wxPoint &pos, const wxSize &size, long style)
+Edit::Edit (wxWindow *parent, LanguageDB *langDb, StyleDB *styleDb, wxWindowID id, const wxPoint &pos, const wxSize &size, long style)
   : wxStyledTextCtrl(parent, id, pos, size, style)
   {
     wxConfigBase *havenConf = wxConfigBase::Get(false);
@@ -79,11 +80,14 @@ Edit::Edit (wxWindow *parent, wxWindowID id, const wxPoint &pos, const wxSize &s
     confCF = havenConf->ReadBool("EnabledCodeFolding", true);
     m_filename = wxEmptyString;
 
+    languageDB = langDb;
+    styleDB = styleDb;
+
     m_LineNrID = 0;
     m_DividerID = 1;
     m_FoldingID = 2;
 
-    m_language = NULL;
+    curLanguage = NULL;
 
     SetStyleBits(8);
 
@@ -101,7 +105,7 @@ Edit::Edit (wxWindow *parent, wxWindowID id, const wxPoint &pos, const wxSize &s
     StyleSetForeground(wxSTC_STYLE_LINENUMBER, wxColor(wxT("DARK GREY")));
     StyleSetBackground(wxSTC_STYLE_LINENUMBER, *wxWHITE);
     StyleSetForeground(wxSTC_STYLE_INDENTGUIDE, wxColor(wxT("DARK GREY")));
-    InitializePrefs(DEFAULT_LANGUAGE);
+    InitializePrefs(DEFAULT_LANGUAGE, "any");
 
     SetVisiblePolicy(wxSTC_VISIBLE_STRICT|wxSTC_VISIBLE_SLOP, 1);
     SetXCaretPolicy(wxSTC_CARET_EVEN|wxSTC_VISIBLE_STRICT|wxSTC_VISIBLE_SLOP, 1);
@@ -214,7 +218,7 @@ Edit::Edit (wxWindow *parent, wxWindowID id, const wxPoint &pos, const wxSize &s
   }
 
   void Edit::onHighlightLang(wxCommandEvent &event) {
-    InitializePrefs(g_LanguagePrefs[event.GetId() - havenID_HILIGHTFIRST].name);
+    InitializePrefs(languageDB->GetLanguageByExtension("cpp")->GetName(), "cpp");
   }
 
   void Edit::onDisplayEOL(wxCommandEvent &WXUNUSED(event)) {
@@ -394,24 +398,21 @@ Edit::Edit (wxWindow *parent, wxWindowID id, const wxPoint &pos, const wxSize &s
     return wxEmptyString;
   }
 
-  bool Edit::InitializePrefs(const wxString &name) {
+  bool Edit::InitializePrefs(const wxString &name, const wxString &ext) {
     StyleClearAll();
 
-    Haven::LanguageInfo const* curInfo = NULL;
+   // Haven::LanguageInfo const* curInfo = NULL;
+
+    Language *curLang = languageDB->GetLanguageByExtension(ext);
+    curLanguage = curLang;
 
     bool found = false;
     int languageNum;
-    for (languageNum = 0; languageNum < Haven::g_LanguagePrefsSize; languageNum++) {
-      curInfo = &Haven::g_LanguagePrefs[languageNum];
-      if (curInfo->name == name) {
-        found = true;
-        break;
-      }
-    }
-    if (!found) return false;
 
-    SetLexer(curInfo->lexer);
-    m_language = curInfo;
+    //if (!found) return false;
+
+    SetLexer(curLang->GetLexer());
+    //curLanguage = curLang;
 
     SetMarginType(m_LineNrID, wxSTC_MARGIN_NUMBER);
     StyleSetForeground(wxSTC_STYLE_LINENUMBER, wxColor(wxT("DARK GREY")));
@@ -431,11 +432,13 @@ Edit::Edit (wxWindow *parent, wxWindowID id, const wxPoint &pos, const wxSize &s
     StyleSetForeground(wxSTC_STYLE_DEFAULT, wxColor(wxT("DARK GREY")));
     StyleSetForeground(wxSTC_STYLE_INDENTGUIDE, wxColor(wxT("DARK GREY")));
 
-    if (Haven::g_CommonPrefs.syntaxEnable) {
+    // TODO Switch to config system
+    if (Haven::g_CommonPrefs.syntaxEnable && strcmp(curLang->GetName(), "<default>") != 0) {
       int keywordNum = 0;
-      for (num = 0; num < STYLE_TYPES_COUNT; num++) {
-        if (curInfo->styles[num].type == -1) continue;
-        const Haven::StyleInfo &curType = Haven::g_StylePrefs[curInfo->styles[num].type];
+      for (num = 0; num < curLanguage->GetStyleSize(); num++) {
+        if (curLanguage->GetStyles()[num].sType <= -1 || curLanguage->GetStyles()[num].sType > STYLE_TYPES_COUNT) continue;
+        //const Haven::StyleInfo &curType = Haven::g_StylePrefs[curInfo->styles[num].type];
+        StyleDef curType = styleDB->At(curLanguage->GetStyles()[num].sType);
         wxFont font(curType.fontSize, wxMODERN, wxNORMAL, wxNORMAL, false, curType.fontname);
         StyleSetFont(num, font);
         if (curType.foreground) {
@@ -449,7 +452,7 @@ Edit::Edit (wxWindow *parent, wxWindowID id, const wxPoint &pos, const wxSize &s
         StyleSetUnderline(num, (curType.fontStyle & havenSTC_STYLE_UNDERL) > 0);
         StyleSetVisible(num, (curType.fontStyle & havenSTC_STYLE_HIDDEN) == 0);
         StyleSetCase(num, curType.letterCase);
-        const char *pwords = curInfo->styles[num].words;
+        const char *pwords = curLanguage->GetStyles()[num].keyWords;
         if (pwords) {
           SetKeyWords(keywordNum, pwords);
           keywordNum += 1;
@@ -467,14 +470,14 @@ Edit::Edit (wxWindow *parent, wxWindowID id, const wxPoint &pos, const wxSize &s
     SetMarginWidth(m_FoldingID, 0);
     SetMarginSensitive(m_FoldingID, false);
     if (confCF) {
-      SetMarginWidth(m_FoldingID, curInfo->folds != 0 ? m_FoldingMargin : 0);
-      SetMarginSensitive(m_FoldingID, curInfo->folds != 0);
-      SetProperty(wxT("fold"), curInfo->folds != 0 ? wxT("1") : wxT("0"));
-      SetProperty(wxT("fold.comment"), (curInfo->folds & havenSTC_FOLD_COMMENT) > 0 ? wxT("1") : wxT("0"));
-      SetProperty(wxT("fold.compact"), (curInfo->folds & havenSTC_FOLD_COMPACT) > 0 ? wxT("1") : wxT("0"));
-      SetProperty(wxT("fold.preprocessor"), (curInfo->folds & havenSTC_FOLD_PREPROC) > 0 ? wxT("1") : wxT("0"));
-      SetProperty(wxT("fold.html"), (curInfo->folds & havenSTC_FOLD_HTML) > 0 ? wxT("1") : wxT("0"));
-      SetProperty(wxT("fold.html.preprocessor"), (curInfo->folds & havenSTC_FOLD_HTMLPREP) > 0 ? wxT("1") : wxT("0"));
+      SetMarginWidth(m_FoldingID, curLanguage->GetFolds() != 0 ? m_FoldingMargin : 0);
+      SetMarginSensitive(m_FoldingID, curLanguage->GetFolds() != 0);
+      SetProperty(wxT("fold"), curLanguage->GetFolds() != 0 ? wxT("1") : wxT("0"));
+      SetProperty(wxT("fold.comment"), (curLanguage->GetFolds() & havenSTC_FOLD_COMMENT) > 0 ? wxT("1") : wxT("0"));
+      SetProperty(wxT("fold.compact"), (curLanguage->GetFolds() & havenSTC_FOLD_COMPACT) > 0 ? wxT("1") : wxT("0"));
+      SetProperty(wxT("fold.preprocessor"), (curLanguage->GetFolds() & havenSTC_FOLD_PREPROC) > 0 ? wxT("1") : wxT("0"));
+      SetProperty(wxT("fold.html"), (curLanguage->GetFolds() & havenSTC_FOLD_HTML) > 0 ? wxT("1") : wxT("0"));
+      SetProperty(wxT("fold.html.preprocessor"), (curLanguage->GetFolds() & havenSTC_FOLD_HTMLPREP) > 0 ? wxT("1") : wxT("0"));
     }
     SetFoldFlags(wxSTC_FOLDFLAG_LINEBEFORE_CONTRACTED | wxSTC_FOLDFLAG_LINEAFTER_CONTRACTED);
 
@@ -511,13 +514,17 @@ Edit::Edit (wxWindow *parent, wxWindowID id, const wxPoint &pos, const wxSize &s
 
   bool Edit::LoadFile(const wxString &filename) {
     if (!filename.empty()) m_filename = filename;
+    wxString *ext = new wxString();
+    wxFileName::SplitPath(filename, NULL, NULL, ext);
+    wxFileName fname (m_filename);
+
+    curLanguage = languageDB->GetLanguageByExtension(ext->ToAscii());
+    InitializePrefs(DeterminePrefs(fname.GetFullName()), ext->ToAscii());
 
     wxStyledTextCtrl::LoadFile(m_filename);
 
     EmptyUndoBuffer();
 
-    wxFileName fname (m_filename);
-    InitializePrefs(DeterminePrefs(fname.GetFullName()));
 
     return true;
   }
@@ -556,7 +563,7 @@ Edit::Edit (wxWindow *parent, wxWindowID id, const wxPoint &pos, const wxSize &s
       fullname->Add(new wxStaticText(this, wxID_ANY, edit->GetFilename()), 0, wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL);
       wxGridSizer *textInfo = new wxGridSizer(4, 0, 2);
       textInfo->Add(new wxStaticText(this, wxID_ANY, _("Language"), wxDefaultPosition, wxSize(80, wxDefaultCoord)), 0, wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLeft, 4);
-      textInfo->Add(new wxStaticText(this, wxID_ANY, edit->m_language->name), 0, wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxRight, 4);
+      textInfo->Add(new wxStaticText(this, wxID_ANY, edit->curLanguage->GetName()), 0, wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxRight, 4);
       textInfo->Add(new wxStaticText(this, wxID_ANY, _("Lexer-ID: "), wxDefaultPosition, wxSize(80, wxDefaultCoord)), 0, wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLeft, 4);
       text = wxString::Format(wxT("%d"), edit->GetLexer());
       textInfo->Add(new wxStaticText(this, wxID_ANY, text), 0, wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL | wxRight, 4);

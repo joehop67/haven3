@@ -8,6 +8,7 @@
 
 using namespace std;
 using namespace Haven;
+using namespace Haven::LanguageMeta;
 
 wxBEGIN_EVENT_TABLE(TabView, wxAuiNotebook)
   EVT_AUINOTEBOOK_PAGE_CHANGING(wxID_ANY, OnTabChange)
@@ -15,11 +16,14 @@ wxEND_EVENT_TABLE()
 
 int Haven::g_TabTableSize = 0;
 
-TabView::TabView(wxWindow *parent, wxWindowID id, const wxPoint &pos, const wxSize &size, long style)
+TabView::TabView(wxWindow *parent, LanguageDB *langDb, StyleDB *styleDb, wxWindowID id, const wxPoint &pos, const wxSize &size, long style)
   : wxAuiNotebook(parent, id, pos, size, style | wxAUI_NB_CLOSE_BUTTON | wxAUI_NB_CLOSE_ON_ALL_TABS)
   {
 //    parentFrame = frame;
-    Edit *tabEdit = new Edit(this, wxID_ANY);
+    styleDB = styleDb;
+    languageDB = langDb;
+
+    Edit *tabEdit = new Edit(this, langDb, styleDb);
     TabInfo defaultTab{
       0,
       "default",
@@ -58,7 +62,7 @@ void TabView::AddTab(const wxString &title, Edit *editor) {
 }
 
 void TabView::AddDefaultTab(const wxString &title) {
-  Edit *edit = new Edit(this, wxID_ANY);
+  Edit *edit = new Edit(this, languageDB, styleDB);
   edit->SetFocus();
   TabInfo defaultTab{
     TabTable.size(),

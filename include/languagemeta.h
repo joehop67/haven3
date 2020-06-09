@@ -17,6 +17,7 @@ namespace Haven {
       int fontSize;
       int fontStyle;
       int letterCase;
+      bool isError;
       //int sType;
     };
     struct LanguageStyle {
@@ -34,6 +35,7 @@ namespace Haven {
       int GetFolds() const { return Folds; }
 
       std::vector<LanguageMeta::LanguageStyle> GetStyles() { return Styles; }
+      size_t GetStyleSize() { return Styles.size(); }
       LanguageMeta::LanguageStyle GetStyleByType(int type);
 
       void SetLexer(int lexer);
@@ -73,6 +75,7 @@ namespace Haven {
 
       LanguageMeta::StyleDef At(int index);
       void Add(LanguageMeta::StyleDef def);
+      size_t GetSize() { return StylePrefs.size(); }
     private:
       std::vector<LanguageMeta::StyleDef> StylePrefs;
       int DBSize;

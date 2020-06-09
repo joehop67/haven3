@@ -107,9 +107,24 @@ StyleDB::StyleDB(StyleDef def) {
 StyleDB::~StyleDB() {}
 
 StyleDef StyleDB::At(int index) {
-  return StylePrefs[index];
+  StyleDef defaultStyle;
+  if (index <= StylePrefs.size()) {
+    defaultStyle = StylePrefs[index];
+    return defaultStyle;
+  }
+  defaultStyle.name = wxT("null");
+  defaultStyle.background = wxT("WHITE");
+  defaultStyle.foreground = wxT("BLACK");
+  defaultStyle.fontname = wxT("");
+  defaultStyle.fontSize = 10;
+  defaultStyle.fontStyle = 0;
+  defaultStyle.letterCase = 0;
+  defaultStyle.isError = true;
+  return defaultStyle;
+
 }
 
 void StyleDB::Add(StyleDef def) {
   StylePrefs.push_back(def);
+  DBSize++;
 }
